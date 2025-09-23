@@ -12,15 +12,48 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
+float speed = 1.f;
+float x = 0.f;
+float y = 0.f;
+float z = 1.f;
 
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
+	if (action == GLFW_PRESS) 
+	{
+		switch (key) {
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, GL_TRUE);
+			break;
+		case GLFW_KEY_RIGHT:
+			x = 1.f;
+			break;
+		case GLFW_KEY_LEFT:
+			x = -1.f;
+			break;
+		case GLFW_KEY_X:
+			x = 1.f;
+			y = 0.f;
+			z = 0.f;
+			break;
+		case GLFW_KEY_Y:
+			x = 0.f;
+			y = 1.f;
+			z = 0.f;
+			break;
+		case GLFW_KEY_Z:
+			x = 0.f;
+			y = 0.f;
+			z = 1.f;
+			break;
+		default: 
+			break;
+		}
+
+		printf("key_callback [%d,%d,%d,%d] \n", key, scancode, action, mods);
+	}
 }
 
 static void window_focus_callback(GLFWwindow* window, int focused) { printf("window_focus_callback \n"); }
@@ -35,10 +68,13 @@ static void window_size_callback(GLFWwindow* window, int width, int height) {
 static void cursor_callback(GLFWwindow* window, double x, double y) { printf("cursor_callback \n"); }
 
 static void button_callback(GLFWwindow* window, int button, int action, int mode) {
-	if (action == GLFW_PRESS) printf("button_callback [%d,%d,%d]\n", button, action, mode);
+
+	if (action == GLFW_PRESS) {
+		printf("button_callback [%d,%d,%d]\n", button, action, mode);
+		
+	}
+	
 }
-
-
 
 //GLM test
 
@@ -62,7 +98,7 @@ int main(void)
 
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
-	window = glfwCreateWindow(640, 480, "ZPG", NULL, NULL);
+	window = glfwCreateWindow(800, 600, "ZPG", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -84,17 +120,15 @@ int main(void)
 
 	glfwSetWindowSizeCallback(window, window_size_callback);
 
-
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	float ratio = width / (float)height;
 	glViewport(0, 0, width, height);
 
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-
+	float angle = 0.f;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -102,22 +136,39 @@ int main(void)
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glRotatef((float)glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+		glPushMatrix();
 
+		//glRotatef((angle - (float)glfwGetTime()), 0.f, 0.f, 1.f);
+		
+		glRotatef(angle, x, y, z);
+		glTranslatef(0.6f, -0.4, 0);
 		glBegin(GL_TRIANGLES);
 		glColor3f(1.f, 0.f, 0.f);
-		glVertex3f(-0.6f, -0.4f, 0.f);
+		glVertex3f(-0.6f, -0.6f, 0.f);
 
 		glColor3f(0.f, 1.f, 0.f);
-		glVertex3f(0.6f, -0.4f, 0.f);
+		glVertex3f(-0.6f, 0.6f, 0.f);
 
 		glColor3f(0.f, 0.f, 1.f);
-		glVertex3f(0.f, 0.6f, 0.f);
+		glVertex3f(0.6f, 0.6f, 0.f);
+
+		glColor3f(1.f, 0.f, 0.f);
+		glVertex3f(-0.6f, -0.6f, 0.f);
+
+		glColor3f(1.f, 1.f, 0.f);
+		glVertex3f(0.6f, -0.6f, 0.f);
+
+		glColor3f(0.f, 0.f, 1.f);
+		glVertex3f(0.6f, 0.6f, 0.f);
 
 		glEnd();
+
+		glPopMatrix();
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
+
+		angle -= speed;
 	}
 	glfwDestroyWindow(window);
 	glfwTerminate();
