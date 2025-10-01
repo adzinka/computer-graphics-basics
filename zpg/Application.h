@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <memory>
 #include "Scene.h"
 
 struct GLFWwindow;   
@@ -11,7 +13,8 @@ public:
 
     void initialization();      
     void setupScene();
-    void run();              
+    void run();        
+    void switchScene(int index);
 
 private:
     float speed_ = 1.f;
@@ -21,7 +24,8 @@ private:
 
     GLFWwindow* window_ = nullptr;
 
-    Scene scene_;
+    std::vector<std::unique_ptr<Scene>> scenes_;
+    Scene* currentScene_ = nullptr;
 
     bool ready_ = false;
 

@@ -165,30 +165,35 @@ void Application::initialization()
 }
 
 void Application::setupScene() {
-    ShaderProgram* progShader = scene_.makeProgram(vertex_shader, fragment_shader);
-    ShaderProgram* progShaderColor = scene_.makeProgram(vs_color, fs_color);
+ 
+    auto scene1 = std::make_unique<Scene>();
+    { 
+        ShaderProgram* progColor = scene1->makeProgram(vs_color, fs_color);
 
-    ready_ = (progShader && progShaderColor);
-    if (!ready_) {
-        fprintf(stderr, "Shader build failed. Rendering loop will not start.\n");
+        Model* modelColor = scene1->makeModel(points2, sizeof(points2));
+        modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+        modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
+        scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
+
+        Model* modelSquare = scene1->makeModel(square, sizeof(square));
+        modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+        modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
+        scene1->addDrawable(modelSquare, progColor, GL_TRIANGLES, 6);
+        
     }
+    scenes_.push_back(std::move(scene1));
 
-  
-    Model* modelTri = scene_.makeModel(points, sizeof(points));
-    modelTri->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+    auto scene2 = std::make_unique<Scene>();
+    {
+        ShaderProgram* progSimple = scene2->makeProgram(vertex_shader, fragment_shader);
+        Model* modelTri = scene2->makeModel(points, sizeof(points)); 
+        modelTri->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+        scene2->addDrawable(modelTri, progSimple, GL_TRIANGLES, 3);
+    }
+    scenes_.push_back(std::move(scene2));
 
-    Model* modelColor = scene_.makeModel(points2, sizeof(points2));
-    modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-
-    Model* modelSquare = scene_.makeModel(square, sizeof(square));
-    modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-
-    scene_.addDrawable(modelTri, progShader, GL_TRIANGLES, 3);
-    scene_.addDrawable(modelColor, progShaderColor, GL_TRIANGLES, 6);
-    scene_.addDrawable(modelSquare, progShaderColor, GL_TRIANGLES, 6);
-    
+    switchScene(0); 
+    ready_ = true; 
 
 }
 
@@ -201,10 +206,21 @@ void Application::run()
         // clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene_.drawAll();
+        //scene_.drawAll();
+        currentScene_->drawAll();
 
         glfwPollEvents();
         glfwSwapBuffers(window_);
+    }
+}
+
+void Application::switchScene(int index) {
+    if (index >= 0 && index < scenes_.size()) {
+        currentScene_ = scenes_[index].get();
+        printf("Switched to scene %d\n", index);
+    }
+    else {
+        printf("Error: scene index %d is out of bounds.\n", index);
     }
 }
 
@@ -212,15 +228,21 @@ void Application::onKey(int key, int scancode, int action, int mods) {
     if (action != GLFW_PRESS) return;
 
     switch (key) {
-    case GLFW_KEY_ESCAPE:
-        glfwSetWindowShouldClose(window_, GL_TRUE);
-        break;
-    case GLFW_KEY_RIGHT: x_ = 1.f; break;
-    case GLFW_KEY_LEFT:  x_ = -1.f; break;
-    case GLFW_KEY_X: x_ = 1.f; y_ = 0.f; z_ = 0.f; break;
-    case GLFW_KEY_Y: x_ = 0.f; y_ = 1.f; z_ = 0.f; break;
-    case GLFW_KEY_Z: x_ = 0.f; y_ = 0.f; z_ = 1.f; break;
-    default: break;
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window_, GL_TRUE);
+            break;
+        case GLFW_KEY_1:
+            switchScene(0);
+            break;
+        case GLFW_KEY_2:
+            switchScene(1);
+            break;
+        case GLFW_KEY_RIGHT: x_ = 1.f; break;
+        case GLFW_KEY_LEFT:  x_ = -1.f; break;
+        case GLFW_KEY_X: x_ = 1.f; y_ = 0.f; z_ = 0.f; break;
+        case GLFW_KEY_Y: x_ = 0.f; y_ = 1.f; z_ = 0.f; break;
+        case GLFW_KEY_Z: x_ = 0.f; y_ = 0.f; z_ = 1.f; break;
+        default: break;
     }
     printf("onKey [%d,%d]  state: x=%.1f y=%.1f z=%.1f\n", key, mods, x_, y_, z_);
 }

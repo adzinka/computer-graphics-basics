@@ -16,10 +16,7 @@ public:
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
 
     void drawAll() const;
-    //void add(DrawableObject obj) { objects_.push_back(std::move(obj)); }
-    //void drawAll() const {
-    //    for (const auto& o : objects_) o.draw();
-    //}
+
 private:
     std::vector<std::unique_ptr<Model>> models_;
     std::vector<std::unique_ptr<ShaderProgram>> programs_;
