@@ -3,7 +3,7 @@
 // GLEW
 #include <GL/glew.h>
 
-// GLM (для сеттеров матриц/векторов; можно убрать, если пока не нужно)
+// GLM 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec3.hpp>

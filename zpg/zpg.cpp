@@ -6,8 +6,9 @@ int main(void)
     app->initialization(); 
 
     // Loading scene
-    app->createShaders();
-    app->createModels();
+    //app->createShaders();
+    //app->createModels();
+    app->setupScene();
 
     // Rendering
     app->run(); 

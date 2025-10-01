@@ -144,6 +144,13 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Models\bushes.h" />
+    <ClInclude Include="Models\gift.h" />
+    <ClInclude Include="Models\plain.h" />
+    <ClInclude Include="Models\sphere.h" />
+    <ClInclude Include="Models\suzi_flat.h" />
+    <ClInclude Include="Models\suzi_smooth.h" />
+    <ClInclude Include="Models\tree.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
   </ItemGroup>

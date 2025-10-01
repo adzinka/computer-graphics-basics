@@ -1,13 +1,27 @@
 #pragma once
+
 #include <vector>
+#include <memory> 
 #include "DrawableObject.h"
+#include "Model.h"
+#include "ShaderProgram.h"
 
 class Scene {
 public:
-    void add(DrawableObject obj) { objects_.push_back(std::move(obj)); }
-    void drawAll() const {
-        for (const auto& o : objects_) o.draw();
-    }
+    Scene() = default;
+    ~Scene() = default;
+
+    Model* makeModel(const void* vertices, GLsizeiptr sizeBytes);
+    ShaderProgram* makeProgram(const char* vertexSrc, const char* fragmentSrc);
+    DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
+
+    void drawAll() const;
+    //void add(DrawableObject obj) { objects_.push_back(std::move(obj)); }
+    //void drawAll() const {
+    //    for (const auto& o : objects_) o.draw();
+    //}
 private:
-    std::vector<DrawableObject> objects_;
+    std::vector<std::unique_ptr<Model>> models_;
+    std::vector<std::unique_ptr<ShaderProgram>> programs_;
+    std::vector<std::unique_ptr<DrawableObject>> drawables_;
 };

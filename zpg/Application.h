@@ -3,17 +3,14 @@
 #include "Scene.h"
 
 struct GLFWwindow;   
-class ShaderProgram;    
-class Model;
 
 class Application {
 public:
     Application();
     ~Application();
 
-    void initialization();   
-    void createShaders();    
-    void createModels();     
+    void initialization();      
+    void setupScene();
     void run();              
 
 private:
@@ -23,11 +20,6 @@ private:
     float z_ = 1.f;
 
     GLFWwindow* window_ = nullptr;
-    ShaderProgram* progShader_ = nullptr;
-    ShaderProgram* progShaderColor_ = nullptr;
-    Model* modelTri_ = nullptr;
-    Model* modelColor_ = nullptr;
-    Model* modelSquare_ = nullptr;
 
     Scene scene_;
 

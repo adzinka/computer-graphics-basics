@@ -99,12 +99,8 @@ static void button_callback(GLFWwindow* window, int button, int action, int mode
 
 
 Application::Application() {}
+
 Application::~Application() {
-    if (progShader_) { delete progShader_; progShader_ = nullptr; }
-    if (progShaderColor_) { delete progShaderColor_; progShaderColor_ = nullptr; }
-    if (modelTri_) { delete modelTri_;   modelTri_ = nullptr; }
-    if (modelColor_) { delete modelColor_; modelColor_ = nullptr; }
-    if (modelSquare_) { delete modelColor_; modelColor_ = nullptr; }
 
     if (window_) {
         glfwDestroyWindow(window_);
@@ -168,36 +164,32 @@ void Application::initialization()
     glViewport(0, 0, width, height);
 }
 
-void Application::createModels()
-{
-    modelTri_ = new Model();
-    modelTri_->upload(points, sizeof(points), GL_STATIC_DRAW);
-    modelTri_->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+void Application::setupScene() {
+    ShaderProgram* progShader = scene_.makeProgram(vertex_shader, fragment_shader);
+    ShaderProgram* progShaderColor = scene_.makeProgram(vs_color, fs_color);
 
-    modelColor_ = new Model();
-    modelColor_->upload(points2, sizeof(points2), GL_STATIC_DRAW);
-    modelColor_->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    modelColor_->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-
-    modelSquare_ = new Model();
-    modelSquare_->upload(square, sizeof(square));
-    modelSquare_->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    modelSquare_->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-
-    scene_.add(DrawableObject(modelColor_, progShaderColor_, GL_TRIANGLES, 6));
-    scene_.add(DrawableObject(modelTri_, progShader_, GL_TRIANGLES, 3));
-    scene_.add(DrawableObject(modelSquare_, progShaderColor_, GL_TRIANGLES, 6));
-}
-
-void Application::createShaders()
-{
-    progShader_ = new ShaderProgram(vertex_shader, fragment_shader);
-    progShaderColor_ = new ShaderProgram(vs_color, fs_color);
-
-    ready_ = (progShader_ && progShader_->valid()) && (progShaderColor_ && progShaderColor_->valid());
+    ready_ = (progShader && progShaderColor);
     if (!ready_) {
         fprintf(stderr, "Shader build failed. Rendering loop will not start.\n");
     }
+
+  
+    Model* modelTri = scene_.makeModel(points, sizeof(points));
+    modelTri->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+    Model* modelColor = scene_.makeModel(points2, sizeof(points2));
+    modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
+
+    Model* modelSquare = scene_.makeModel(square, sizeof(square));
+    modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
+
+    scene_.addDrawable(modelTri, progShader, GL_TRIANGLES, 3);
+    scene_.addDrawable(modelColor, progShaderColor, GL_TRIANGLES, 6);
+    scene_.addDrawable(modelSquare, progShaderColor, GL_TRIANGLES, 6);
+    
+
 }
 
 void Application::run()
