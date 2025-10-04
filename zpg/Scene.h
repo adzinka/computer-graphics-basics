@@ -16,6 +16,7 @@ public:
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
 
     void drawAll() const;
+    void update(float time);
 
 private:
     std::vector<std::unique_ptr<Model>> models_;

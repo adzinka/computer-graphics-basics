@@ -33,3 +33,13 @@ void Scene::drawAll() const {
         obj->draw();
     }
 }
+
+void Scene::update(float time) {
+
+    if (!drawables_.empty()) {
+        drawables_[0]->getTransform().setRotation(glm::vec3(0.0f, time * 50.0f, 0.0f));
+    }
+    if (drawables_.size() > 1) {
+        drawables_[1]->getTransform().setRotation(glm::vec3(0.0f, -time * 50.0f, 0.0f));
+    }
+}

@@ -188,20 +188,18 @@ void Application::setupScene() {
         Model* modelColor = scene1->makeModel(points2, sizeof(points2), strideInBytes);
         modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
         modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-        scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
-
-        //Model* modelSquare = scene1->makeModel(square, sizeof(square), strideInBytes);
-        //modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-        //modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-        //scene1->addDrawable(modelSquare, progColor, GL_TRIANGLES, 6);
+  
+        DrawableObject* rectObj = scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
+        rectObj->getTransform().setPosition(glm::vec3(0.7f, 0.0f, 0.0f));
+        rectObj->getTransform().setScale(glm::vec3(0.5f));
         
+        Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
+        modelSphere->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, strideInBytes, 0);
+        modelSphere->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, strideInBytes, 3 * sizeof(float));
 
-        //Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
-        //modelSphere->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, strideInBytes, 0);
-        //modelSphere->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, strideInBytes, 3 * sizeof(float));
-
-        //
-        //scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());
+        DrawableObject* sphereObj = scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());
+        sphereObj->getTransform().setPosition(glm::vec3(-0.5f, -0.4f, 0.0f));
+        sphereObj->getTransform().setScale(glm::vec3(0.5f));
         
     }
     scenes_.push_back(std::move(scene1));
@@ -228,8 +226,11 @@ void Application::run()
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window_)) {
         // clear color and depth buffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
 
+        float time = glfwGetTime();
+        currentScene_->update(time);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //scene_.drawAll();
         currentScene_->drawAll();
 

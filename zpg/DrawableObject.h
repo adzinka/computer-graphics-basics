@@ -1,5 +1,6 @@
 #pragma once
 #include <GL/glew.h>
+#include "Transformation.h"
 
 class Model;
 class ShaderProgram;
@@ -14,10 +15,13 @@ public:
 
     void draw() const;
 
+    Transformation& getTransform() { return transform_; }
+
 private:
     Model* model_;   
     ShaderProgram* program_;  
     GLenum   mode_;
     GLsizei  count_;
     GLint    first_;
+    Transformation transform_;
 };

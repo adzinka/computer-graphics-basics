@@ -13,51 +13,78 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{b167a2bf-c831-4720-88d1-24152743e997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{fecebf0b-e22a-4665-9cde-ff0deb29df10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{d766e1fb-d563-4a2a-b211-cac02df35275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{045c8b44-827c-4a10-a317-91f08687edd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawableObject">
+      <UniqueIdentifier>{e8f5f898-2e8b-4437-871d-7973819d9994}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{fd8723dc-3d02-4852-ad16-1a05fe1173ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Transformation">
+      <UniqueIdentifier>{8f67d825-6456-48ef-a927-1cf4d088f353}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zpg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawableObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Application</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableObject.cpp">
+      <Filter>DrawableObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Transformation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawableObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="gift.h">
+      <Filter>Resource Files\Models</Filter>
     </ClInclude>
     <ClInclude Include="sphere.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="gift.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Application.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableObject.h">
+      <Filter>DrawableObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Transformation.h">
+      <Filter>Transformation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
