@@ -77,3 +77,14 @@ bool ShaderProgram::link(GLuint program, const char* tag) {
     }
     return true;
 }
+
+void ShaderProgram::setUniformMat4(const char* uniformName, const glm::mat4& matrix) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+
+    if (location == -1) {
+        // fprintf(stderr, "Warning: uniform '%s' not found.\n", uniformName);
+        return;
+    }
+
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}

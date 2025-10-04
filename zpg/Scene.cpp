@@ -1,9 +1,11 @@
 #include "Scene.h"
 #include <iostream>
 
-Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes) {
+Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes) {
     auto model = std::make_unique<Model>();
-    model->upload(vertices, sizeBytes);
+
+    model->upload(vertices, sizeBytes, strideBytes);
+
     models_.push_back(std::move(model));
     return models_.back().get(); 
 }

@@ -10,10 +10,14 @@ Model::~Model() {
 	if (vao_) glDeleteVertexArrays(1, &vao_);
 }
 
-void Model::upload(const void* vertices, GLsizeiptr sizeBytes, GLenum usage) {
+void Model::upload(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes, GLenum usage) {
 	glBindVertexArray(vao_);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 	glBufferData(GL_ARRAY_BUFFER, sizeBytes, vertices, usage);
+
+	if (strideBytes > 0) {
+		vertexCount_ = sizeBytes / strideBytes;
+	}
 }
 
 void Model::enableAttrib(

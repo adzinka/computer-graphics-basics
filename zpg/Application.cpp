@@ -16,6 +16,7 @@
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "DrawableObject.h"
+#include "sphere.h"
 
 static float points[] = {
     -0.85f, -0.75f, 0.0f,
@@ -69,6 +70,18 @@ in vec3 vColor;
 out vec4 fragColor;
 void main(){
     fragColor = vec4(vColor, 1.0);
+})";
+
+static const char* vs_color_matrix = R"(#version 330 core
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aColor;
+
+uniform mat4 modelMatrix; 
+
+out vec3 vColor;
+void main(){
+    vColor = aColor;
+    gl_Position = modelMatrix * vec4(aPos, 1.0);
 })";
 
 //static glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
@@ -166,19 +179,29 @@ void Application::initialization()
 
 void Application::setupScene() {
  
+    const int strideInBytes = 6 * sizeof(float);
+
     auto scene1 = std::make_unique<Scene>();
     { 
-        ShaderProgram* progColor = scene1->makeProgram(vs_color, fs_color);
+        ShaderProgram* progColor = scene1->makeProgram(vs_color_matrix, fs_color);
 
-        Model* modelColor = scene1->makeModel(points2, sizeof(points2));
+        Model* modelColor = scene1->makeModel(points2, sizeof(points2), strideInBytes);
         modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
         modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
         scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
 
-        Model* modelSquare = scene1->makeModel(square, sizeof(square));
-        modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-        modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-        scene1->addDrawable(modelSquare, progColor, GL_TRIANGLES, 6);
+        //Model* modelSquare = scene1->makeModel(square, sizeof(square), strideInBytes);
+        //modelSquare->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+        //modelSquare->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
+        //scene1->addDrawable(modelSquare, progColor, GL_TRIANGLES, 6);
+        
+
+        //Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
+        //modelSphere->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, strideInBytes, 0);
+        //modelSphere->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, strideInBytes, 3 * sizeof(float));
+
+        //
+        //scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());
         
     }
     scenes_.push_back(std::move(scene1));
@@ -186,7 +209,7 @@ void Application::setupScene() {
     auto scene2 = std::make_unique<Scene>();
     {
         ShaderProgram* progSimple = scene2->makeProgram(vertex_shader, fragment_shader);
-        Model* modelTri = scene2->makeModel(points, sizeof(points)); 
+        Model* modelTri = scene2->makeModel(points, sizeof(points), strideInBytes);
         modelTri->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
         scene2->addDrawable(modelTri, progSimple, GL_TRIANGLES, 3);
     }
@@ -202,6 +225,7 @@ void Application::run()
     if (!window_) return;
     if (!ready_) return;
 
+    glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window_)) {
         // clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

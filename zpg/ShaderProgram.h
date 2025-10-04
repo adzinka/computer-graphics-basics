@@ -23,6 +23,8 @@ public:
     ShaderProgram(const ShaderProgram&) = delete;
     ShaderProgram& operator=(const ShaderProgram&) = delete;
 
+    void setUniformMat4(const char* uniformName, const glm::mat4& matrix) const;
+
 private:
     GLuint program_ = 0;
 

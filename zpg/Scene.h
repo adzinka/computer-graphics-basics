@@ -11,7 +11,7 @@ public:
     Scene() = default;
     ~Scene() = default;
 
-    Model* makeModel(const void* vertices, GLsizeiptr sizeBytes);
+    Model* makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes);
     ShaderProgram* makeProgram(const char* vertexSrc, const char* fragmentSrc);
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
 
