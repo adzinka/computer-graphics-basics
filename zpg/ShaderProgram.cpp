@@ -78,13 +78,44 @@ bool ShaderProgram::link(GLuint program, const char* tag) {
     return true;
 }
 
-void ShaderProgram::setUniformMat4(const char* uniformName, const glm::mat4& matrix) const {
+void ShaderProgram::setUniform(const char* uniformName, const glm::mat4& matrix) const {
     GLint location = glGetUniformLocation(program_, uniformName);
-
-    if (location == -1) {
-        // fprintf(stderr, "Warning: uniform '%s' not found.\n", uniformName);
-        return;
+    if (location != -1) {
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
     }
+}
 
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+void ShaderProgram::setUniform(const char* uniformName, float value) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+    if (location != -1) {
+        glUniform1f(location, value);
+    }
+}
+
+void ShaderProgram::setUniform(const char* uniformName, int value) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+    if (location != -1) {
+        glUniform1i(location, value);
+    }
+}
+
+void ShaderProgram::setUniform(const char* uniformName, const glm::vec2& vector) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+    if (location != -1) {
+        glUniform2fv(location, 1, glm::value_ptr(vector));
+    }
+}
+
+void ShaderProgram::setUniform(const char* uniformName, const glm::vec3& vector) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+    if (location != -1) {
+        glUniform3fv(location, 1, glm::value_ptr(vector));
+    }
+}
+
+void ShaderProgram::setUniform(const char* uniformName, const glm::vec4& vector) const {
+    GLint location = glGetUniformLocation(program_, uniformName);
+    if (location != -1) {
+        glUniform4fv(location, 1, glm::value_ptr(vector));
+    }
 }

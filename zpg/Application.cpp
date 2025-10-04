@@ -67,9 +67,12 @@ void main(){
 
 static const char* fs_color = R"(#version 330 core
 in vec3 vColor;
+
+uniform vec4 shapeColor;
+
 out vec4 fragColor;
 void main(){
-    fragColor = vec4(vColor, 1.0);
+    fragColor = shapeColor;
 })";
 
 static const char* vs_color_matrix = R"(#version 330 core

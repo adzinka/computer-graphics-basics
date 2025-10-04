@@ -1,4 +1,4 @@
-#include "Scene.h"
+﻿#include "Scene.h"
 #include <iostream>
 
 Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes) {
@@ -40,6 +40,14 @@ void Scene::update(float time) {
         drawables_[0]->getTransform().setRotation(glm::vec3(0.0f, time * 50.0f, 0.0f));
     }
     if (drawables_.size() > 1) {
+
+        float red = (sin(time * 2.0f) / 2.0f) + 0.5f; // Hodnoty 0.0 až 1.0
+        float green = (cos(time * 2.0f) / 2.0f) + 0.5f; // Hodnoty 0.0 až 1.0
+
+        ShaderProgram* prog = drawables_[1]->getProgram();
+        prog->use(); // Je dobré aktivovat program před nastavením uniformu
+        prog->setUniform("shapeColor", glm::vec4(red, green, 0.7f, 1.0f));
+
         drawables_[1]->getTransform().setRotation(glm::vec3(0.0f, -time * 50.0f, 0.0f));
     }
 }

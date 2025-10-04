@@ -11,7 +11,7 @@ void DrawableObject::draw() const {
 
     glm::mat4 modelMatrix = transform_.getMatrix();
 
-    program_->setUniformMat4("modelMatrix", modelMatrix);
+    program_->setUniform("modelMatrix", modelMatrix);
 
     model_->draw(mode_, first_, count_);
 }
