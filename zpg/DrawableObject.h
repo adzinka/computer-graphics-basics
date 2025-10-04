@@ -1,6 +1,6 @@
 #pragma once
 #include <GL/glew.h>
-#include "Transformation.h"
+#include "CompositeTransform.h"
 
 class Model;
 class ShaderProgram;
@@ -15,8 +15,9 @@ public:
 
     void draw() const;
 
-    Transformation& getTransform() { return transform_; }
+    /*Transformation& getTransform() { return transform_; }*/
     ShaderProgram* getProgram() const { return program_; }
+    CompositeTransform& getTransform() { return transform_; }
 
 private:
     Model* model_;   
@@ -24,5 +25,5 @@ private:
     GLenum   mode_;
     GLsizei  count_;
     GLint    first_;
-    Transformation transform_;
+    CompositeTransform transform_;
 };

@@ -34,7 +34,5 @@ public:
 private:
     GLuint program_ = 0;
 
-    static bool compile(GLuint shader, const char* tag);
     static bool link(GLuint program, const char* tag);
-
 };

@@ -92,5 +92,20 @@
     <ClInclude Include="Shader.h">
       <Filter>Shader</Filter>
     </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Transformation</Filter>
+    </ClInclude>
+    <ClInclude Include="Translate.h">
+      <Filter>Transformation</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotate.h">
+      <Filter>Transformation</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale.h">
+      <Filter>Transformation</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeTransform.h">
+      <Filter>Transformation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

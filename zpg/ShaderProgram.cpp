@@ -10,7 +10,6 @@ ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentS
 
     glLinkProgram(program_);
 
-
     if (!link(program_, "PROGRAM")) {
         glDeleteProgram(program_);
         program_ = 0;
@@ -27,21 +26,6 @@ void ShaderProgram::useProgram() const {
 
 void ShaderProgram::unuseProgram() const {
     glUseProgram(0);
-}
-
-bool ShaderProgram::compile(GLuint shader, const char* tag) {
-    GLint ok = GL_FALSE;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
-    if (ok == GL_FALSE) {
-        GLint len = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
-        GLchar* log = new GLchar[len + 1];
-        glGetShaderInfoLog(shader, len, NULL, log);
-        fprintf(stderr, "[Compile error][%s]:\n%s\n", tag, log);
-        delete[] log;
-        return false;
-    }
-    return true;
 }
 
 bool ShaderProgram::link(GLuint program, const char* tag) {

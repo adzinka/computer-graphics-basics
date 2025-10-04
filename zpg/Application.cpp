@@ -16,6 +16,10 @@
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "DrawableObject.h"
+#include "Translate.h"
+#include "Rotate.h"
+#include "Scale.h"
+
 #include "sphere.h"
 
 static float points[] = {
@@ -68,11 +72,9 @@ void main(){
 static const char* fs_color = R"(#version 330 core
 in vec3 vColor;
 
-uniform vec4 shapeColor;
-
 out vec4 fragColor;
 void main(){
-    fragColor = shapeColor;
+    fragColor = vec4(vColor, 1.0);
 })";
 
 static const char* vs_color_matrix = R"(#version 330 core
@@ -180,7 +182,7 @@ void Application::initialization()
     glViewport(0, 0, width, height);
 }
 
-void Application::setupScene() {
+void Application::createAndSetupScenes() {
  
     const int strideInBytes = 6 * sizeof(float);
 
@@ -193,17 +195,20 @@ void Application::setupScene() {
         modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
   
         DrawableObject* rectObj = scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
-        rectObj->getTransform().setPosition(glm::vec3(0.7f, 0.0f, 0.0f));
-        rectObj->getTransform().setScale(glm::vec3(0.5f));
-        
-        Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
+        auto& rectTransform = rectObj->getTransform();
+        rectTransform.add(std::make_unique<Scale>(glm::vec3(1.5f)));
+        rectTransform.add(std::make_unique<Rotate>(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
+        rectTransform.add(std::make_unique<Translate>(glm::vec3(0.7f, 0.0f, 0.0f)));
+
+
+       /* Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
         modelSphere->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, strideInBytes, 0);
         modelSphere->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, strideInBytes, 3 * sizeof(float));
 
-        DrawableObject* sphereObj = scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());
-        sphereObj->getTransform().setPosition(glm::vec3(-0.5f, -0.4f, 0.0f));
+        DrawableObject* sphereObj = scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());*/
+ /*       sphereObj->getTransform().setPosition(glm::vec3(-0.5f, -0.4f, 0.0f));
         sphereObj->getTransform().setScale(glm::vec3(0.5f));
-        
+        */
     }
     scenes_.push_back(std::move(scene1));
 
@@ -228,8 +233,7 @@ void Application::run()
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window_)) {
-        // clear color and depth buffer
-        
+        // clear color and depth buffe
 
         float time = glfwGetTime();
         currentScene_->update(time);

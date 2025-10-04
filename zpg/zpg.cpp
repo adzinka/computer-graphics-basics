@@ -5,7 +5,7 @@ int main(void)
     Application* app = new Application();
     app->initialization(); 
 
-    app->setupScene();
+    app->createAndSetupScenes();
 
     app->run(); 
 

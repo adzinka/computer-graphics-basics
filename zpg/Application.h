@@ -12,7 +12,7 @@ public:
     ~Application();
 
     void initialization();      
-    void setupScene();
+    void createAndSetupScenes();
     void run();        
     void switchScene(int index);
 
