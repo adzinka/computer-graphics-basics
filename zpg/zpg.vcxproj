@@ -134,6 +134,7 @@
     <ClCompile Include="DrawableObject.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="zpg.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="gift.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="Transformation.h" />

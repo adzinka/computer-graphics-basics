@@ -9,14 +9,15 @@
 #include <glm/vec3.hpp>
 
 #include <string>
+#include "Shader.h"
 
 class ShaderProgram {
 public:
-    ShaderProgram(const char* vertexSrc, const char* fragmentSrc);
+    ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
     ~ShaderProgram();
 
-    void use() const;
-    void unuse() const;
+    void useProgram() const;
+    void unuseProgram() const;
 
     bool valid() const { return program_ != 0; }
 

@@ -7,7 +7,7 @@
 
 void DrawableObject::draw() const {
 
-    program_->use();
+    program_->useProgram();
 
     glm::mat4 modelMatrix = transform_.getMatrix();
 

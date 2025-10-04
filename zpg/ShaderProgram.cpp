@@ -1,34 +1,15 @@
 #include "ShaderProgram.h"
 #include <iostream>
 
-ShaderProgram::ShaderProgram(const char* vertexSrc, const char* fragmentSrc)
+ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader)
 {
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertexSrc, nullptr);
-    glCompileShader(vs);
-    if (!compile(vs, "VERTEX")) {
-        glDeleteShader(vs);
-        program_ = 0;
-        return;
-    }
-
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragmentSrc, nullptr);
-    glCompileShader(fs);
-    if (!compile(fs, "FRAGMENT")) {
-        glDeleteShader(vs);
-        glDeleteShader(fs);
-        program_ = 0;
-        return;
-    }
-
     program_ = glCreateProgram();
-    glAttachShader(program_, vs);
-    glAttachShader(program_, fs);
+    
+    vertexShader.attachTo(program_);
+    fragmentShader.attachTo(program_);
+
     glLinkProgram(program_);
 
-    glDeleteShader(vs);
-    glDeleteShader(fs);
 
     if (!link(program_, "PROGRAM")) {
         glDeleteProgram(program_);
@@ -40,11 +21,11 @@ ShaderProgram::~ShaderProgram() {
     if (program_) glDeleteProgram(program_);
 }
 
-void ShaderProgram::use() const {
+void ShaderProgram::useProgram() const {
     if (program_) glUseProgram(program_);
 }
 
-void ShaderProgram::unuse() const {
+void ShaderProgram::unuseProgram() const {
     glUseProgram(0);
 }
 

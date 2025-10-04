@@ -57,6 +57,9 @@
     <ClCompile Include="Transformation.cpp">
       <Filter>Transformation</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Transformation.h">
       <Filter>Transformation</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

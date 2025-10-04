@@ -11,7 +11,10 @@ Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei stri
 }
 
 ShaderProgram* Scene::makeProgram(const char* vertexSrc, const char* fragmentSrc) {
-    auto program = std::make_unique<ShaderProgram>(vertexSrc, fragmentSrc);
+    Shader vertexShader(vertexSrc, GL_VERTEX_SHADER);
+    Shader fragmentShader(fragmentSrc, GL_FRAGMENT_SHADER);
+
+    auto program = std::make_unique<ShaderProgram>(vertexShader, fragmentShader);
 
     if (!program->valid()) {
         std::cerr << "Shader program creation failed!" << std::endl;
@@ -41,11 +44,11 @@ void Scene::update(float time) {
     }
     if (drawables_.size() > 1) {
 
-        float red = (sin(time * 2.0f) / 2.0f) + 0.5f; // Hodnoty 0.0 až 1.0
-        float green = (cos(time * 2.0f) / 2.0f) + 0.5f; // Hodnoty 0.0 až 1.0
+        float red = (sin(time * 2.0f) / 2.0f) + 0.5f; 
+        float green = (cos(time * 2.0f) / 2.0f) + 0.5f; 
 
         ShaderProgram* prog = drawables_[1]->getProgram();
-        prog->use(); // Je dobré aktivovat program před nastavením uniformu
+        prog->useProgram(); 
         prog->setUniform("shapeColor", glm::vec4(red, green, 0.7f, 1.0f));
 
         drawables_[1]->getTransform().setRotation(glm::vec3(0.0f, -time * 50.0f, 0.0f));
