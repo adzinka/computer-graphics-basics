@@ -1,6 +1,10 @@
 ﻿#include "Scene.h"
 #include <iostream>
 
+#include "Translate.h" 
+#include "Scale.h"
+#include "sphere.h"
+
 Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes) {
     auto model = std::make_unique<Model>();
 
@@ -34,16 +38,5 @@ DrawableObject* Scene::addDrawable(Model* model, ShaderProgram* program, GLenum 
 void Scene::drawAll() const {
     for (const auto& obj : drawables_) {
         obj->draw();
-    }
-}
-
-void Scene::update(float time) {
-
-    if (!drawables_.empty()) {
-       // drawables_[0]->getTransform().setRotation(glm::vec3(0.0f, time * 50.0f, 0.0f));
-    }
-    if (drawables_.size() > 1) {
-
-        //drawables_[1]->getTransform().setRotation(glm::vec3(0.0f, -time * 50.0f, 0.0f));
     }
 }

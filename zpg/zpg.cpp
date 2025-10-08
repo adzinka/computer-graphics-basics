@@ -1,4 +1,11 @@
-﻿#include "Application.h"
+﻿/**
+ * @file zpg.cpp
+ *
+ * @brief Main function
+ *
+ * @author Yelizaveta Zhurava ZHU0020
+  **/
+#include "Application.h"
 
 int main(void)
 {
