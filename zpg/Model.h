@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <cstddef> // size_t
+#include <cstddef> 
 
 class Model {
 public:

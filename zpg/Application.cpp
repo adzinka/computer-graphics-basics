@@ -1,4 +1,4 @@
-//Include GLEW
+﻿//Include GLEW
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -13,81 +13,9 @@
 #include <stdio.h>
 
 #include "Application.h"
-#include "ShaderProgram.h"
-#include "Model.h"
-#include "DrawableObject.h"
-#include "Translate.h"
-#include "Rotate.h"
-#include "Scale.h"
-
-#include "sphere.h"
-
-static float points[] = {
-    -0.85f, -0.75f, 0.0f,
-    -0.65f, -0.95f, 0.0f,
-    -0.95f, -0.95f, 0.0f
-};
-
-static float points2[] = {
-     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f
-};
-
-static float square[] = {
-     0.55f, 0.90f, 0.0f,    1.f, 0.f, 0.f,  
-     0.55f, 0.50f, 0.0f,    0.f, 1.f, 0.f,  
-     0.95f, 0.50f, 0.0f,    0.f, 0.f, 1.f,  
-
-     0.55f, 0.90f, 0.0f,    1.f, 0.f, 0.f, 
-     0.95f, 0.50f, 0.0f,    0.f, 0.f, 1.f,  
-     0.95f, 0.90f, 0.0f,    1.f, 1.f, 0.f   
-};
-
-static const char* vertex_shader = R"(#version 330 core
-layout(location=0) in vec3 vp;
-void main () {
-     gl_Position = vec4(vp, 1.0);
-})";
-
-static const char* fragment_shader = R"(#version 330 core
-out vec4 fragColor;
-void main () {
-     fragColor = vec4 (0.5, 1.0, 0.5, 1.0);
-})";
-
-static const char* vs_color = R"(#version 330 core
-layout(location=0) in vec3 aPos;
-layout(location=1) in vec3 aColor;
-out vec3 vColor;
-void main(){
-    vec3 p = aPos;
-    vColor = aColor;
-    gl_Position = vec4(p, 1.0);
-})";
-
-static const char* fs_color = R"(#version 330 core
-in vec3 vColor;
-
-out vec4 fragColor;
-void main(){
-    fragColor = vec4(vColor, 1.0);
-})";
-
-static const char* vs_color_matrix = R"(#version 330 core
-layout(location=0) in vec3 aPos;
-layout(location=1) in vec3 aColor;
-
-uniform mat4 modelMatrix; 
-
-out vec3 vColor;
-void main(){
-    vColor = aColor;
-    gl_Position = modelMatrix * vec4(aPos, 1.0);
-})";
+#include "TriangleScene.h"
+#include "SpheresScene.h"
+#include "ForestScene.h"
 
 //static glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
 //static glm::mat4 View = glm::lookAt(
@@ -96,7 +24,6 @@ void main(){
 //    glm::vec3(0, 1, 0)
 //);
 //static glm::mat4 Model = glm::mat4(1.0f);
-
 
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
@@ -115,11 +42,9 @@ static void button_callback(GLFWwindow* window, int button, int action, int mode
     }
 }
 
-
 Application::Application() {}
 
 Application::~Application() {
-
     if (window_) {
         glfwDestroyWindow(window_);
         window_ = nullptr;
@@ -134,11 +59,6 @@ void Application::initialization()
         fprintf(stderr, "ERROR: could not start GLFW3\n");
         exit(EXIT_FAILURE);
     }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     window_ = glfwCreateWindow(800, 600, "ZPG", NULL, NULL);
     if (!window_) {
@@ -184,46 +104,20 @@ void Application::initialization()
 
 void Application::createAndSetupScenes() {
  
-    const int strideInBytes = 6 * sizeof(float);
-
-    auto scene1 = std::make_unique<Scene>();
-    { 
-        ShaderProgram* progColor = scene1->makeProgram(vs_color_matrix, fs_color);
-
-        Model* modelColor = scene1->makeModel(points2, sizeof(points2), strideInBytes);
-        modelColor->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-        modelColor->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-  
-        DrawableObject* rectObj = scene1->addDrawable(modelColor, progColor, GL_TRIANGLES, 6);
-        auto& rectTransform = rectObj->getTransform();
-        rectTransform.add(std::make_unique<Scale>(glm::vec3(1.5f)));
-        rectTransform.add(std::make_unique<Rotate>(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
-        rectTransform.add(std::make_unique<Translate>(glm::vec3(0.7f, 0.0f, 0.0f)));
-
-
-       /* Model* modelSphere = scene1->makeModel(sphere, sizeof(sphere), strideInBytes);
-        modelSphere->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, strideInBytes, 0);
-        modelSphere->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, strideInBytes, 3 * sizeof(float));
-
-        DrawableObject* sphereObj = scene1->addDrawable(modelSphere, progColor, GL_TRIANGLES, modelSphere->getVertexCount());*/
- /*       sphereObj->getTransform().setPosition(glm::vec3(-0.5f, -0.4f, 0.0f));
-        sphereObj->getTransform().setScale(glm::vec3(0.5f));
-        */
-    }
+    auto scene1 = std::make_unique<TriangleScene>();
+    scene1->setup();
     scenes_.push_back(std::move(scene1));
 
-    auto scene2 = std::make_unique<Scene>();
-    {
-        ShaderProgram* progSimple = scene2->makeProgram(vertex_shader, fragment_shader);
-        Model* modelTri = scene2->makeModel(points, sizeof(points), strideInBytes);
-        modelTri->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-        scene2->addDrawable(modelTri, progSimple, GL_TRIANGLES, 3);
-    }
+    auto scene2 = std::make_unique<SpheresScene>();
+    scene2->setup();
     scenes_.push_back(std::move(scene2));
+
+    auto scene3 = std::make_unique<ForestScene>();
+    scene3->setup();
+    scenes_.push_back(std::move(scene3));
 
     switchScene(0); 
     ready_ = true; 
-
 }
 
 void Application::run()
@@ -233,12 +127,11 @@ void Application::run()
 
     glEnable(GL_DEPTH_TEST);
     while (!glfwWindowShouldClose(window_)) {
-        // clear color and depth buffe
 
-        float time = glfwGetTime();
+        float time = (float)glfwGetTime();
         currentScene_->update(time);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //scene_.drawAll();
+ 
         currentScene_->drawAll();
 
         glfwPollEvents();
@@ -269,12 +162,10 @@ void Application::onKey(int key, int scancode, int action, int mods) {
         case GLFW_KEY_2:
             switchScene(1);
             break;
-        case GLFW_KEY_RIGHT: x_ = 1.f; break;
-        case GLFW_KEY_LEFT:  x_ = -1.f; break;
-        case GLFW_KEY_X: x_ = 1.f; y_ = 0.f; z_ = 0.f; break;
-        case GLFW_KEY_Y: x_ = 0.f; y_ = 1.f; z_ = 0.f; break;
-        case GLFW_KEY_Z: x_ = 0.f; y_ = 0.f; z_ = 1.f; break;
+        case GLFW_KEY_3:
+            switchScene(2);
+            break;
         default: break;
     }
-    printf("onKey [%d,%d]  state: x=%.1f y=%.1f z=%.1f\n", key, mods, x_, y_, z_);
+    printf("onKey [%d,%d]\n", key, mods);
 }

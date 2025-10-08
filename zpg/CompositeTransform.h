@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "TransformComponent.h"
 #include <vector>
 #include <memory>
@@ -11,8 +11,6 @@ public:
 
     glm::mat4 getMatrix() const override {
         glm::mat4 matrix = glm::mat4(1.0f);
-        // Postupn? n?sob?me matice v?ech komponent
-        // Po?ad? je d?le?it?: M = Mn * ... * M2 * M1
         for (const auto& component : components_) {
             matrix = component->getMatrix() * matrix;
         }

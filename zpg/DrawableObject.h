@@ -15,7 +15,6 @@ public:
 
     void draw() const;
 
-    /*Transformation& getTransform() { return transform_; }*/
     ShaderProgram* getProgram() const { return program_; }
     CompositeTransform& getTransform() { return transform_; }
 
