@@ -7,11 +7,13 @@
 #include "ShaderProgram.h"
 #include "Rotate.h"
 
+class Camera;
+
 class Scene {
 public:
     virtual ~Scene() = default;
 
-    virtual void setup() = 0;
+    virtual void setup(Camera& camera) = 0;
     virtual void update(float time) = 0;
 
     void drawAll() const;
@@ -22,6 +24,6 @@ protected:
     std::vector<std::unique_ptr<DrawableObject>> drawables_;
 
     Model* makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes);
-    ShaderProgram* makeProgram(const char* vertexSrc, const char* fragmentSrc);
+    ShaderProgram* makeProgram(const char* vertexSrc, const char* fragmentSrc, Camera& camera);
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
 };

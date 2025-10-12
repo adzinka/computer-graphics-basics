@@ -4,6 +4,7 @@
 #include "Translate.h" 
 #include "Scale.h"
 #include "sphere.h"
+#include "Camera.h"
 
 Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes) {
     auto model = std::make_unique<Model>();
@@ -14,11 +15,13 @@ Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei stri
     return models_.back().get(); 
 }
 
-ShaderProgram* Scene::makeProgram(const char* vertexSrc, const char* fragmentSrc) {
+ShaderProgram* Scene::makeProgram(const char* vertexSrc, const char* fragmentSrc, Camera& camera) {
     Shader vertexShader(vertexSrc, GL_VERTEX_SHADER);
     Shader fragmentShader(fragmentSrc, GL_FRAGMENT_SHADER);
 
     auto program = std::make_unique<ShaderProgram>(vertexShader, fragmentShader);
+
+    camera.addObserver(program.get());
 
     if (!program->valid()) {
         std::cerr << "Shader program creation failed!" << std::endl;

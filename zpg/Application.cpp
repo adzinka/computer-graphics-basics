@@ -17,14 +17,6 @@
 #include "SpheresScene.h"
 #include "ForestScene.h"
 
-//static glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
-//static glm::mat4 View = glm::lookAt(
-//    glm::vec3(10, 10, 10),
-//    glm::vec3(0, 0, 0),
-//    glm::vec3(0, 1, 0)
-//);
-//static glm::mat4 Model = glm::mat4(1.0f);
-
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
 static void window_focus_callback(GLFWwindow* window, int focused) { printf("window_focus_callback \n"); }
@@ -71,17 +63,40 @@ void Application::initialization()
 
     glfwSetWindowUserPointer(window_, this);
 
+    controller_ = std::make_unique<Controller>(&camera_);
+
     // Callbacks
     glfwSetKeyCallback(window_, [](GLFWwindow* w, int key, int sc, int act, int mods){
         if (auto* app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
             app->onKey(key, sc, act, mods);
+
+            app->controller_->onKey(key, sc, act, mods);
         }
     });
     glfwSetWindowFocusCallback(window_, window_focus_callback);
     glfwSetWindowIconifyCallback(window_, window_iconify_callback);
     glfwSetWindowSizeCallback(window_, window_size_callback);
     glfwSetCursorPosCallback(window_, cursor_callback);
-    glfwSetMouseButtonCallback(window_, button_callback);
+
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetCursorPosCallback(window_, [](GLFWwindow* w, double xpos, double ypos) {
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+
+            app->controller_->onMouseMove(xpos, ypos);
+        }
+    });
+    glfwSetMouseButtonCallback(window_, [](GLFWwindow* w, int button, int action, int mods) {
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+            app->controller_->onMouseButton(button, action, mods);
+        }
+        });
+    glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* w, int width, int height) {
+        // Získáme ukazatel na naši aplikaci
+        if (auto* app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+            // A zavoláme na ní naši metodu
+            app->onWindowResize(width, height);
+        }
+        });
 
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
@@ -105,15 +120,15 @@ void Application::initialization()
 void Application::createAndSetupScenes() {
  
     auto scene1 = std::make_unique<TriangleScene>();
-    scene1->setup();
+    scene1->setup(camera_);
     scenes_.push_back(std::move(scene1));
 
     auto scene2 = std::make_unique<SpheresScene>();
-    scene2->setup();
+    scene2->setup(camera_);
     scenes_.push_back(std::move(scene2));
 
     auto scene3 = std::make_unique<ForestScene>();
-    scene3->setup();
+    scene3->setup(camera_);
     scenes_.push_back(std::move(scene3));
 
     switchScene(0); 
@@ -122,18 +137,36 @@ void Application::createAndSetupScenes() {
 
 void Application::run()
 {
-    if (!window_) return;
-    if (!ready_) return;
+    if (!window_ || !ready_) return;
 
     glEnable(GL_DEPTH_TEST);
-    while (!glfwWindowShouldClose(window_)) {
 
-        float time = (float)glfwGetTime();
-        currentScene_->update(time);
+    while (!glfwWindowShouldClose(window_)) {
+        // --- KROK 1: Výpočet deltaTime pro plynulý pohyb ---
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime_ = currentFrame - lastFrame_;
+        lastFrame_ = currentFrame;
+
+        // --- KROK 2: Zpracování vstupu pro plynulý pohyb (WSAD) ---
+        // Řekneme controlleru, aby zkontroloval stisknuté klávesy a pohnul kamerou
+        if (controller_) {
+            controller_->update(window_, deltaTime_);
+        }
+        
+        // --- KROK 3: Aktualizace logiky scény (animace objektů) ---
+        // Toto volání zůstává stejné
+        if (currentScene_) {
+            currentScene_->update(currentFrame);
+        }
+
+        // --- KROK 4: Vykreslení ---
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-        currentScene_->drawAll();
+        if (currentScene_) {
+            currentScene_->drawAll();
+        }
 
+        // --- KROK 5: Závěrečné operace ---
         glfwPollEvents();
         glfwSwapBuffers(window_);
     }
@@ -168,4 +201,11 @@ void Application::onKey(int key, int scancode, int action, int mods) {
         default: break;
     }
     printf("onKey [%d,%d]\n", key, mods);
+}
+
+void Application::onWindowResize(int width, int height) {
+    // Nastaví novou velikost framebufferu pro OpenGL
+    glViewport(0, 0, width, height);
+    // Předá novou velikost naší kameře, aby si přepočítala poměr stran
+    camera_.onWindowResize(static_cast<float>(width), static_cast<float>(height));
 }

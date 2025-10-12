@@ -22,16 +22,18 @@ static const char* vs_color_matrix = R"(#version 330 core
 layout(location=0) in vec3 aPos;
 layout(location=1) in vec3 aColor;
 
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
 uniform mat4 modelMatrix; 
 
 out vec3 vColor;
 void main(){
     vColor = aColor;
-    gl_Position = modelMatrix * vec4(aPos, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
 })";
 
-void TriangleScene::setup() {
-    ShaderProgram* prog = makeProgram(vs_color_matrix, fs_color);
+void TriangleScene::setup(Camera& camera) {
+    ShaderProgram* prog = makeProgram(vs_color_matrix, fs_color, camera);
 
     Model* triModel = makeModel(triangle_vertices, sizeof(triangle_vertices), 6 * sizeof(float));
     triModel->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);

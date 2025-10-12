@@ -11,6 +11,8 @@
 #include <string>
 #include "Shader.h"
 
+class Camera;
+
 class ShaderProgram {
 public:
     ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
@@ -30,6 +32,7 @@ public:
     void setUniform(const char* uniformName, const glm::vec2& vector) const;
     void setUniform(const char* uniformName, const glm::vec3& vector) const;
     void setUniform(const char* uniformName, const glm::vec4& vector) const;
+    void update(const Camera& camera);
 
 private:
     GLuint program_ = 0;

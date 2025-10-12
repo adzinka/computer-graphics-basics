@@ -26,12 +26,14 @@ static const char* vs_color_matrix = R"(#version 330 core
 layout(location=0) in vec3 aPos;
 layout(location=1) in vec3 aColor;
 
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
 uniform mat4 modelMatrix; 
 
 out vec3 vColor;
 void main(){
     vColor = aColor;
-    gl_Position = modelMatrix * vec4(aPos, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
 })";
 
 static const char* fs_uniform_color = R"(#version 330 core
@@ -41,11 +43,11 @@ static const char* fs_uniform_color = R"(#version 330 core
         fragColor = vec4(objectColor, 1.0);
     })";
 
-void ForestScene::setup() {
+void ForestScene::setup(Camera& camera) {
     srand(time(NULL));
 
-    ShaderProgram* progColor = makeProgram(vs_color_matrix, fs_color);
-    ShaderProgram* progUniform = makeProgram(vs_color_matrix, fs_uniform_color);
+    ShaderProgram* progColor = makeProgram(vs_color_matrix, fs_color, camera);
+    ShaderProgram* progUniform = makeProgram(vs_color_matrix, fs_uniform_color, camera);
 
     Model* suziModel = makeModel(suziSmooth, sizeof(suziSmooth), 6 * sizeof(float));
     suziModel->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);

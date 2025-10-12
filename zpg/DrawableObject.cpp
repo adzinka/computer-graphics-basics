@@ -1,4 +1,4 @@
-#include "DrawableObject.h"
+﻿#include "DrawableObject.h"
 #include "Model.h"
 #include "ShaderProgram.h"
 
@@ -8,7 +8,6 @@
 void DrawableObject::draw() const {
 
     program_->useProgram();
-
     glm::mat4 modelMatrix = transform_.getMatrix();
 
     program_->setUniform("modelMatrix", modelMatrix);

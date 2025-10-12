@@ -1,4 +1,5 @@
-#include "ShaderProgram.h"
+﻿#include "ShaderProgram.h"
+#include "Camera.h"
 #include <iostream>
 
 ShaderProgram::ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader)
@@ -83,4 +84,11 @@ void ShaderProgram::setUniform(const char* uniformName, const glm::vec4& vector)
     if (location != -1) {
         glUniform4fv(location, 1, glm::value_ptr(vector));
     }
+}
+
+void ShaderProgram::update(const Camera& camera) {
+    useProgram(); // Aktivujeme tento shader program
+    // A pošleme do něj aktuální matice z kamery
+    setUniform("viewMatrix", camera.getViewMatrix());
+    setUniform("projectionMatrix", camera.getProjectionMatrix());
 }
