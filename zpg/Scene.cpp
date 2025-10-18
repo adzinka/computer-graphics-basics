@@ -6,32 +6,6 @@
 #include "sphere.h"
 #include "Camera.h"
 
-Model* Scene::makeModel(const void* vertices, GLsizeiptr sizeBytes, GLsizei strideBytes) {
-    auto model = std::make_unique<Model>();
-
-    model->upload(vertices, sizeBytes, strideBytes);
-
-    models_.push_back(std::move(model));
-    return models_.back().get(); 
-}
-
-ShaderProgram* Scene::makeProgram(const char* vertexSrc, const char* fragmentSrc, Camera& camera) {
-    Shader vertexShader(vertexSrc, GL_VERTEX_SHADER);
-    Shader fragmentShader(fragmentSrc, GL_FRAGMENT_SHADER);
-
-    auto program = std::make_unique<ShaderProgram>(vertexShader, fragmentShader);
-
-    camera.addObserver(program.get());
-
-    if (!program->valid()) {
-        std::cerr << "Shader program creation failed!" << std::endl;
-        return nullptr; 
-    }
-
-    programs_.push_back(std::move(program));
-    return programs_.back().get();
-}
-
 DrawableObject* Scene::addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count) {
     auto drawable = std::make_unique<DrawableObject>(model, program, mode, count);
     drawables_.push_back(std::move(drawable));

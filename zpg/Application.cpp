@@ -16,6 +16,12 @@
 #include "TriangleScene.h"
 #include "SpheresScene.h"
 #include "ForestScene.h"
+#include "sphere.h"
+#include "suzi_smooth.h"
+#include "tree.h"
+#include "bushes.h"
+#include "gift.h"
+#include "plain.h"
 
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
@@ -33,6 +39,41 @@ static void button_callback(GLFWwindow* window, int button, int action, int mode
         printf("button_callback [%d,%d,%d]\n", button, action, mode);
     }
 }
+
+static const char* fs_color = R"(#version 330 core
+in vec3 vColor;
+
+out vec4 fragColor;
+void main(){
+    fragColor = vec4(vColor, 1.0);
+})";
+
+static const char* vs_color_matrix = R"(#version 330 core
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aColor;
+
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix; 
+
+out vec3 vColor;
+void main(){
+    vColor = aColor;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
+})";
+
+static const char* fs_uniform_color = R"(#version 330 core
+uniform vec3 objectColor; // Uniform proměnná pro barvu
+out vec4 fragColor;
+void main() {
+    fragColor = vec4(objectColor, 1.0);
+})";
+
+static float triangle_vertices[] = {
+   0.0f, 0.6f, 0.0f,      1.0f, 0.0f, 0.0f,
+   -0.52f, -0.3f, 0.0f,   0.0f, 1.0f, 0.0f,
+   0.52f, -0.3f, 0.0f,    0.0f, 0.0f, 1.0f
+};
 
 Application::Application() {}
 
@@ -91,9 +132,7 @@ void Application::initialization()
         }
         });
     glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* w, int width, int height) {
-        // Získáme ukazatel na naši aplikaci
-        if (auto* app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
-            // A zavoláme na ní naši metodu
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
             app->onWindowResize(width, height);
         }
         });
@@ -115,20 +154,22 @@ void Application::initialization()
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
     glViewport(0, 0, width, height);
+
+    loadResources();
 }
 
 void Application::createAndSetupScenes() {
  
     auto scene1 = std::make_unique<TriangleScene>();
-    scene1->setup(camera_);
+    scene1->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene1));
 
     auto scene2 = std::make_unique<SpheresScene>();
-    scene2->setup(camera_);
+    scene2->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene2));
 
     auto scene3 = std::make_unique<ForestScene>();
-    scene3->setup(camera_);
+    scene3->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene3));
 
     switchScene(0); 
@@ -142,31 +183,24 @@ void Application::run()
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window_)) {
-        // --- KROK 1: Výpočet deltaTime pro plynulý pohyb ---
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime_ = currentFrame - lastFrame_;
         lastFrame_ = currentFrame;
 
-        // --- KROK 2: Zpracování vstupu pro plynulý pohyb (WSAD) ---
-        // Řekneme controlleru, aby zkontroloval stisknuté klávesy a pohnul kamerou
         if (controller_) {
             controller_->update(window_, deltaTime_);
         }
         
-        // --- KROK 3: Aktualizace logiky scény (animace objektů) ---
-        // Toto volání zůstává stejné
         if (currentScene_) {
             currentScene_->update(currentFrame);
         }
 
-        // --- KROK 4: Vykreslení ---
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
         if (currentScene_) {
             currentScene_->drawAll();
         }
 
-        // --- KROK 5: Závěrečné operace ---
         glfwPollEvents();
         glfwSwapBuffers(window_);
     }
@@ -204,8 +238,24 @@ void Application::onKey(int key, int scancode, int action, int mods) {
 }
 
 void Application::onWindowResize(int width, int height) {
-    // Nastaví novou velikost framebufferu pro OpenGL
     glViewport(0, 0, width, height);
-    // Předá novou velikost naší kameře, aby si přepočítala poměr stran
     camera_.onWindowResize(static_cast<float>(width), static_cast<float>(height));
+}
+
+void Application::loadResources() {
+
+    size_t stride = 6 * sizeof(float);
+
+    resourceManager_.createShader("color_shader", vs_color_matrix, fs_color, camera_);
+    resourceManager_.createShader("uniform_color_shader", vs_color_matrix, fs_uniform_color, camera_);
+    resourceManager_.createShader("lightning", "lms.vert", "lms.frag", camera_);
+
+
+    resourceManager_.createModel("triangle", triangle_vertices, sizeof(triangle_vertices), stride, true);
+    resourceManager_.createModel("sphere", sphere, sizeof(sphere), stride, true);
+    resourceManager_.createModel("suzi", suzi_smooth, sizeof(suzi_smooth), stride, true);
+    resourceManager_.createModel("tree", tree, sizeof(tree), stride, true);
+    resourceManager_.createModel("bush", bushes, sizeof(bushes), stride, true);
+    resourceManager_.createModel("gift", gift, sizeof(gift), stride, false);
+    resourceManager_.createModel("plain", plain, sizeof(plain), stride, true);
 }

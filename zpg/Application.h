@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Controller.h"
+#include "ResourceManager.h" 
 
 struct GLFWwindow;   
 
@@ -28,6 +29,9 @@ private:
 
     std::vector<std::unique_ptr<Scene>> scenes_;
     Scene* currentScene_ = nullptr;
+
+    ResourceManager resourceManager_;
+    void loadResources();
 
     bool ready_ = false;
 

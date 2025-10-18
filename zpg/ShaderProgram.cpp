@@ -87,8 +87,7 @@ void ShaderProgram::setUniform(const char* uniformName, const glm::vec4& vector)
 }
 
 void ShaderProgram::update(const Camera& camera) {
-    useProgram(); // Aktivujeme tento shader program
-    // A pošleme do něj aktuální matice z kamery
+    useProgram(); 
     setUniform("viewMatrix", camera.getViewMatrix());
     setUniform("projectionMatrix", camera.getProjectionMatrix());
 }
