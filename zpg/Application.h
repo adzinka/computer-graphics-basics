@@ -20,11 +20,13 @@ public:
     void switchScene(int index);
 
     Camera& getCamera() { return camera_; }
+
     void onWindowResize(int width, int height);
 
 private:
     GLFWwindow* window_ = nullptr;
     Camera camera_;
+
     std::unique_ptr<Controller> controller_;
 
     std::vector<std::unique_ptr<Scene>> scenes_;

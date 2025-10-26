@@ -90,4 +90,11 @@ void ShaderProgram::update(const Camera& camera) {
     useProgram(); 
     setUniform("viewMatrix", camera.getViewMatrix());
     setUniform("projectionMatrix", camera.getProjectionMatrix());
+    setUniform("viewPos", camera.getPosition());
+    unuseProgram();
 }
+
+void ShaderProgram::updateCamera(const Camera& camera) {
+    this->update(camera);
+}
+

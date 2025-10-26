@@ -7,10 +7,19 @@
 
 void DrawableObject::draw() const {
 
-    program_->useProgram();
-    glm::mat4 modelMatrix = transform_.getMatrix();
+    if (model_ && program_) {
+        program_->useProgram();
 
-    program_->setUniform("modelMatrix", modelMatrix);
+        glm::mat4 modelMatrix = transform_ ? transform_->getMatrix() : glm::mat4(1.0f);
+        program_->setUniform("modelMatrix", modelMatrix);
+        program_->setUniform("objectColor", color_); 
 
-    model_->draw(mode_, first_, count_);
+        model_->draw(mode_, first_, count_);
+
+        program_->unuseProgram();
+    }
+}
+
+void DrawableObject::setTransform(std::unique_ptr<TransformComponent> transform) {
+    transform_ = std::move(transform);
 }

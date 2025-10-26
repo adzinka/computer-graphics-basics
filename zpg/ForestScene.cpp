@@ -1,76 +1,98 @@
 ﻿#include "ForestScene.h"
+#include "ResourceManager.h"
 
-#include "ShaderProgram.h"
-#include "Model.h"
 #include "Translate.h"
 #include "Rotate.h"
 #include "Scale.h"
-#include "ResourceManager.h"
+#include "CompositeTransform.h"
+#include "Firefly.h"
 
 #include <cstdlib>
 #include <ctime>
 
+ForestScene::ForestScene() {}
+ForestScene::~ForestScene() {}
+
 void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     srand(time(NULL));
 
-    ShaderProgram* progColor = manager.getShader("color_shader");
-    ShaderProgram* progUniform = manager.getShader("uniform_color_shader");
-    ShaderProgram* lightning = manager.getShader("lightning");
+    ShaderProgram* progLambert = manager.getShader("lambert");
+    ShaderProgram* progConstant = manager.getShader("constant");
 
-
-    Model* suziModel = manager.getModel("suzi");
     Model* giftModel = manager.getModel("gift");
     Model* treeModel = manager.getModel("tree");
     Model* bushModel = manager.getModel("bush");
     Model* plainModel = manager.getModel("plain");
 
-    DrawableObject* ground = addDrawable(plainModel, progColor, GL_TRIANGLES, plainModel->getVertexCount());
-    auto& groundTransform = ground->getTransform();
+    DrawableObject* ground = addDrawable(plainModel, progLambert, GL_TRIANGLES, plainModel->getVertexCount());
+    ground->setColor(glm::vec3(0.2f, 0.6f, 0.2f));
+   
+    auto groundComposite = std::make_unique<CompositeTransform>();
+    groundComposite->add(std::make_unique<Scale>(glm::vec3(25.0f, 1.0f, 25.0f)));
+    groundComposite->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, 0.0f)));
+    ground->setTransform(std::move(groundComposite));
 
-    groundTransform.add(std::make_unique<Scale>(glm::vec3(25.0f, 1.0f, 25.0f)));
-    groundTransform.add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, 0.0f)));
-
-    int objectCount = 100; 
+    int objectCount = 100;
     for (int i = 0; i < objectCount; ++i) {
-  
+
         float x = (rand() / (float)RAND_MAX) * 50.0f - 25.0f;
         float z = (rand() / (float)RAND_MAX) * 50.0f - 25.0f;
-
-        float scl = 0.8f + (rand() / (float)RAND_MAX) * 0.7f; 
+        float scl = 0.8f + (rand() / (float)RAND_MAX) * 0.7f;
         float rot = (rand() / (float)RAND_MAX) * 360.0f;
 
-        if (i < 50) { 
-            DrawableObject* treeObj = addDrawable(treeModel, lightning, GL_TRIANGLES, treeModel->getVertexCount());
-            auto& t = treeObj->getTransform();
-            t.add(std::make_unique<Scale>(glm::vec3(scl)));
-            t.add(std::make_unique<Rotate>(rot, glm::vec3(0.0f, 1.0f, 0.0f)));
-            t.add(std::make_unique<Translate>(glm::vec3(x, 0.0f, z)));
-        }
-        else { 
-            DrawableObject* bushObj = addDrawable(bushModel, lightning, GL_TRIANGLES, bushModel->getVertexCount());
-            auto& t = bushObj->getTransform();
-            t.add(std::make_unique<Scale>(glm::vec3(scl)));
-            t.add(std::make_unique<Rotate>(rot, glm::vec3(0.0f, 1.0f, 0.0f)));
-            t.add(std::make_unique<Translate>(glm::vec3(x, 0.0f, z)));
-        }
-    }
+        DrawableObject* obj = nullptr;
 
+        if (i < 50) { 
+            obj = addDrawable(treeModel, progLambert, GL_TRIANGLES, treeModel->getVertexCount());
+            obj->setColor(glm::vec3(0.1f, 0.4f, 0.1f));
+        }
+        else {
+            obj = addDrawable(bushModel, progLambert, GL_TRIANGLES, bushModel->getVertexCount());
+            obj->setColor(glm::vec3(0.3f, 0.5f, 0.1f));
+        }
+
+        auto objComposite = std::make_unique<CompositeTransform>();
+        objComposite->add(std::make_unique<Scale>(glm::vec3(scl)));
+        objComposite->add(std::make_unique<Rotate>(rot, glm::vec3(0.0f, 1.0f, 0.0f)));
+        objComposite->add(std::make_unique<Translate>(glm::vec3(x, 0.0f, z)));
+        obj->setTransform(std::move(objComposite));
+    }
 
     for (int i = 0; i < 10; ++i) {
         float x = (rand() / (float)RAND_MAX) * 50.0f - 25.0f;
         float z = (rand() / (float)RAND_MAX) * 50.0f - 25.0f;
-        DrawableObject* randomGift = addDrawable(giftModel, progUniform, GL_TRIANGLES, giftModel->getVertexCount());
-        auto& t = randomGift->getTransform();
-        t.add(std::make_unique<Scale>(glm::vec3(3.0f)));
-        t.add(std::make_unique<Translate>(glm::vec3(x, 0.0f, z)));
+        float rot = (rand() / (float)RAND_MAX) * 360.0f;
+
+        DrawableObject* randomGift = addDrawable(giftModel, progConstant, GL_TRIANGLES, giftModel->getVertexCount());
+        randomGift->setColor(glm::vec3(1.0f, 0.1f, 0.1f));
+
+        auto giftComposite = std::make_unique<CompositeTransform>();
+        giftComposite->add(std::make_unique<Scale>(glm::vec3(0.4f)));
+        giftComposite->add(std::make_unique<Rotate>(rot, glm::vec3(0.0f, 1.0f, 0.0f)));
+        giftComposite->add(std::make_unique<Translate>(glm::vec3(x, 0.0f, z)));
+        randomGift->setTransform(std::move(giftComposite));
     }
 
-    progUniform->useProgram();
-    progUniform->setUniform("objectColor", glm::vec3(0.6f, 0.4f, 0.1f));
+    Model* sphereModel = manager.getModel("sphere");
+    ShaderProgram* constantShader = manager.getShader("constant");
+    int fireflyCount = 10; 
+
+    for (int i = 0; i < fireflyCount; ++i) {
+        float x = (rand() / (float)RAND_MAX) * 40.0f - 20.0f; 
+        float y = (rand() / (float)RAND_MAX) * 3.0f + 0.5f;   
+        float z = (rand() / (float)RAND_MAX) * 40.0f - 20.0f; 
+
+        fireflies_.push_back(std::make_unique<Firefly>(
+            this, sphereModel, constantShader, glm::vec3(x, y, z)
+        ));
+    }
+
 }
 
 void ForestScene::update(float time) {
-    if (suziRotation_) {
-        suziRotation_->setAngle(time * 40.0f);
+    updateSceneLights();
+
+    for (auto& firefly : fireflies_) {
+        firefly->update(time);
     }
 }

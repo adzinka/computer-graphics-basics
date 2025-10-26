@@ -11,9 +11,12 @@
 #include <string>
 #include "Shader.h"
 
-class Camera;
+#include "ICameraObserver.h"
 
-class ShaderProgram {
+class Camera;
+class Light;
+
+class ShaderProgram : public ICameraObserver {
 public:
     ShaderProgram(const Shader& vertexShader, const Shader& fragmentShader);
     ~ShaderProgram();
@@ -32,7 +35,9 @@ public:
     void setUniform(const char* uniformName, const glm::vec2& vector) const;
     void setUniform(const char* uniformName, const glm::vec3& vector) const;
     void setUniform(const char* uniformName, const glm::vec4& vector) const;
+
     void update(const Camera& camera);
+    void updateCamera(const Camera& camera) override;
 
 private:
     GLuint program_ = 0;

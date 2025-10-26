@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-class ShaderProgram;
+#include "ICameraObserver.h"
 
 class Camera {
 public:
@@ -24,12 +24,13 @@ public:
 
     const glm::vec3& getPosition() const { return position_; }
 
-    void addObserver(ShaderProgram* observer);
-    void removeObserver(ShaderProgram* observer);
+    void addObserver(ICameraObserver* observer);
+    void removeObserver(ICameraObserver* observer);
 
     void onMouseMove(float xoffset, float yoffset);
     void onWindowResize(float width, float height);
     void setPosition(const glm::vec3& pos);
+    void setFov(float fov);
 
 private:
     void updateCameraVectors();
@@ -49,5 +50,5 @@ private:
     float nearPlane_;    
     float farPlane_;    
 
-    std::vector<ShaderProgram*> observers_;
+    std::vector<ICameraObserver*> observers_;
 };

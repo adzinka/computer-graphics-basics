@@ -131,33 +131,46 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
+    <ClCompile Include="Firefly.cpp" />
     <ClCompile Include="ForestScene.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SolarSystemScene.cpp" />
     <ClCompile Include="SpheresScene.cpp" />
+    <ClCompile Include="SpheresScene2.cpp" />
     <ClCompile Include="TriangleScene.cpp" />
     <ClCompile Include="zpg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="lms.frag" />
-    <None Include="lms.vert" />
+    <None Include="bad_phong.frag" />
+    <None Include="blinn.frag" />
+    <None Include="constant.frag" />
+    <None Include="lambert.frag" />
+    <None Include="lighting.vert" />
+    <None Include="phong.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="TestScene.h" />
     <ClInclude Include="bushes.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Firefly.h" />
+    <ClInclude Include="ICameraObserver.h" />
     <ClInclude Include="CompositeTransform.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="ForestScene.h" />
     <ClInclude Include="gift.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="plain.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -166,8 +179,10 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SolarSystemScene.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="SpheresScene.h" />
+    <ClInclude Include="SpheresScene2.h" />
     <ClInclude Include="suzi_flat.h" />
     <ClInclude Include="suzi_smooth.h" />
     <ClInclude Include="TransformComponent.h" />

@@ -13,10 +13,7 @@ public:
 
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
-    void createShader(GLenum shaderType, const char* shaderCode);
-    void createShaderFromFile(GLenum shaderType, const char* shaderFile);
 
 private:
     GLuint shaderID_ = 0;
-
 };

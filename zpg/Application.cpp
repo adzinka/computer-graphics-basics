@@ -11,11 +11,16 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string> 
 
 #include "Application.h"
 #include "TriangleScene.h"
 #include "SpheresScene.h"
+#include "SpheresScene2.h"
 #include "ForestScene.h"
+#include "SolarSystemScene.h"
+#include "TestScene.h"
+
 #include "sphere.h"
 #include "suzi_smooth.h"
 #include "tree.h"
@@ -39,35 +44,6 @@ static void button_callback(GLFWwindow* window, int button, int action, int mode
         printf("button_callback [%d,%d,%d]\n", button, action, mode);
     }
 }
-
-static const char* fs_color = R"(#version 330 core
-in vec3 vColor;
-
-out vec4 fragColor;
-void main(){
-    fragColor = vec4(vColor, 1.0);
-})";
-
-static const char* vs_color_matrix = R"(#version 330 core
-layout(location=0) in vec3 aPos;
-layout(location=1) in vec3 aColor;
-
-uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 modelMatrix; 
-
-out vec3 vColor;
-void main(){
-    vColor = aColor;
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
-})";
-
-static const char* fs_uniform_color = R"(#version 330 core
-uniform vec3 objectColor; // Uniform proměnná pro barvu
-out vec4 fragColor;
-void main() {
-    fragColor = vec4(objectColor, 1.0);
-})";
 
 static float triangle_vertices[] = {
    0.0f, 0.6f, 0.0f,      1.0f, 0.0f, 0.0f,
@@ -172,6 +148,18 @@ void Application::createAndSetupScenes() {
     scene3->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene3));
 
+    auto scene4 = std::make_unique<SolarSystemScene>();
+    scene4->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene4));
+
+    auto scene5 = std::make_unique<SpheresScene2>();
+    scene5->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene5));
+
+    auto scene6 = std::make_unique<TestScene>();
+    scene6->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene6));
+
     switchScene(0); 
     ready_ = true; 
 }
@@ -232,6 +220,27 @@ void Application::onKey(int key, int scancode, int action, int mods) {
         case GLFW_KEY_3:
             switchScene(2);
             break;
+        case GLFW_KEY_4:
+            switchScene(3);
+            break;
+        case GLFW_KEY_5:
+            switchScene(4);
+            break;
+        case GLFW_KEY_6:
+            switchScene(5); 
+            break;
+        case GLFW_KEY_F1:
+            camera_.setFov(45.0f);
+            printf("FOV 45\n");
+            break;
+        case GLFW_KEY_F2:
+            camera_.setFov(90.0f);
+            printf("FOV 90\n");
+            break;
+        case GLFW_KEY_F3:
+            camera_.setFov(130.0f);
+            printf("FOV 130\n");
+            break;
         default: break;
     }
     printf("onKey [%d,%d]\n", key, mods);
@@ -246,10 +255,11 @@ void Application::loadResources() {
 
     size_t stride = 6 * sizeof(float);
 
-    resourceManager_.createShader("color_shader", vs_color_matrix, fs_color, camera_);
-    resourceManager_.createShader("uniform_color_shader", vs_color_matrix, fs_uniform_color, camera_);
-    resourceManager_.createShader("lightning", "lms.vert", "lms.frag", camera_);
-
+    resourceManager_.createShader("constant", std::string("lighting.vert"), std::string("constant.frag"), camera_);
+    resourceManager_.createShader("lambert", std::string("lighting.vert"), std::string("lambert.frag"), camera_);
+    resourceManager_.createShader("phong", std::string("lighting.vert"), std::string("phong.frag"), camera_);
+    resourceManager_.createShader("blinn", std::string("lighting.vert"), std::string("blinn.frag"), camera_);
+    resourceManager_.createShader("bad_phong", std::string("lighting.vert"), std::string("bad_phong.frag"), camera_);
 
     resourceManager_.createModel("triangle", triangle_vertices, sizeof(triangle_vertices), stride, true);
     resourceManager_.createModel("sphere", sphere, sizeof(sphere), stride, true);

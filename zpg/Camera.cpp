@@ -1,5 +1,4 @@
 ﻿#include "Camera.h"
-#include "ShaderProgram.h" 
 
 Camera::Camera()
     : position_(0.0f, 2.0f, 5.0f),       
@@ -57,11 +56,12 @@ void Camera::onWindowResize(float width, float height) {
     notify();
 }
 
-void Camera::addObserver(ShaderProgram* observer) {
+void Camera::addObserver(ICameraObserver* observer) {
     observers_.push_back(observer);
+    observer->updateCamera(*this);
 }
 
-void Camera::removeObserver(ShaderProgram* observer) {
+void Camera::removeObserver(ICameraObserver* observer) {
     observers_.erase(std::remove(observers_.begin(), observers_.end(), observer), observers_.end());
 }
 
@@ -80,15 +80,21 @@ void Camera::move(Camera_Movement direction, float deltaTime) {
 }
 
 void Camera::notify() const {
-    for (ShaderProgram* observer : observers_) {
+    for (ICameraObserver* observer : observers_) {
         if (observer) {
-            observer->update(*this);
+            observer->updateCamera(*this);
         }
     }
 }
 
 void Camera::setPosition(const glm::vec3& pos) {
     position_ = pos;
+
+    notify();
+}
+
+void Camera::setFov(float fov) {
+    fov_ = fov; 
 
     notify();
 }
