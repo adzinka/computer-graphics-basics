@@ -10,19 +10,24 @@ public:
     DrawableObject(Model* model, ShaderProgram* program,
         GLenum mode, GLsizei count, GLint first = 0)
         : model_(model), program_(program),
-        mode_(mode), count_(count), first_(first) {
+        mode_(mode), count_(count), first_(first),
+        transform_(std::make_unique<CompositeTransform>()) {
     }
 
     void draw() const;
 
-    ShaderProgram* getProgram() const { return program_; }
-    CompositeTransform& getTransform() { return transform_; }
+    void setTransform(std::unique_ptr<TransformComponent> transform);
+    TransformComponent* getTransform() const { return transform_.get(); }
 
+    ShaderProgram* getProgram() const { return program_; }
+    void setColor(const glm::vec3& color) { color_ = color; }
 private:
-    Model* model_;   
-    ShaderProgram* program_;  
-    GLenum   mode_;
-    GLsizei  count_;
+    Model* model_ = nullptr;
+    ShaderProgram* program_ = nullptr;
+    GLenum   mode_ = GL_TRIANGLES;
+    GLsizei  count_ = 0;
     GLint    first_;
-    CompositeTransform transform_;
+    std::unique_ptr<TransformComponent> transform_ = nullptr;
+
+    glm::vec3 color_ = glm::vec3(1.0f);
 };

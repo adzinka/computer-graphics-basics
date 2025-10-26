@@ -4,63 +4,48 @@
 #include "Translate.h"
 #include "Rotate.h"
 #include "Scale.h"
-#include "sphere.h"
+#include "CompositeTransform.h"
 
-static const char* fs_color = R"(#version 330 core
-in vec3 vColor;
+#include "ResourceManager.h"
 
-out vec4 fragColor;
-void main(){
-    fragColor = vec4(vColor, 1.0);
-})";
+void SpheresScene::setup(Camera& camera, ResourceManager& manager) {
 
-static const char* vs_color_matrix = R"(#version 330 core
-layout(location=0) in vec3 aPos;
-layout(location=1) in vec3 aColor;
+    addLight(std::make_unique<Light>(
+        glm::vec3(0.0f, 0.0f, 0.0f),                
+        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f),         
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),         
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),       
+        1.0f,  
+        0.0f, 
+        0.0f   
+    ));
 
-uniform mat4 modelMatrix; 
+    ShaderProgram* progPhong = manager.getShader("phong");
 
-out vec3 vColor;
-void main(){
-    vColor = aColor;
-    gl_Position = modelMatrix * vec4(aPos, 1.0);
-})";
+    Model* sphereModel = manager.getModel("sphere");
 
-void SpheresScene::setup() {
-    
-    ShaderProgram* prog = makeProgram(vs_color_matrix, fs_color);
-    Model* sphereModel = makeModel(sphere, sizeof(sphere), 6 * sizeof(float));
-    sphereModel->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    sphereModel->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 3 * sizeof(float));
-
-
+    progPhong->useProgram();
+ 
     std::vector<glm::vec3> positions = {
-        { 0.6f,  0.0f, 0.0f}, 
-        {-0.6f,  0.0f, 0.0f}, 
-        { 0.0f,  0.6f, 0.0f}, 
-        { 0.0f, -0.6f, 0.0f} 
+            { 0.6f,  0.0f, 0.0f},
+            {-0.6f,  0.0f, 0.0f},
+            { 0.0f,  0.6f, 0.0f},
+            { 0.0f, -0.6f, 0.0f}
     };
 
-    for (const auto& pos : positions) {
-        
-        DrawableObject* sphereObj = addDrawable(sphereModel, prog, GL_TRIANGLES, sphereModel->getVertexCount());
+    for (int i = 0; i < 4; ++i) {
 
-        auto& transform = sphereObj->getTransform();
+        DrawableObject* sphereObj = addDrawable(sphereModel, progPhong, GL_TRIANGLES, sphereModel->getVertexCount());
+        sphereObj->setColor(glm::vec3(0.385f, 0.647f, 0.812f));
 
-        auto rotation = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-        sphereRotations_.push_back(rotation.get());
+        auto transform = std::make_unique<CompositeTransform>();
 
-        transform.add(std::make_unique<Scale>(glm::vec3(0.3f)));
-        transform.add(std::move(rotation)); 
-        transform.add(std::make_unique<Translate>(pos)); 
+        transform->add(std::make_unique<Scale>(glm::vec3(0.3f))); 
+        transform->add(std::make_unique<Translate>(positions[i]));
+        sphereObj->setTransform(std::move(transform));
     }
 }
 
 void SpheresScene::update(float time) {
-    int i = 0;
-    for (auto* rotation : sphereRotations_) {
-        float speed = 40.0f + i * 10.0f;
-        rotation->setAngle(time * speed);
-        i++;
-    }
+    updateSceneLights();
 }

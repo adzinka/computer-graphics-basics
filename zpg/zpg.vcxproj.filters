@@ -34,6 +34,15 @@
     <Filter Include="Transformation">
       <UniqueIdentifier>{8f67d825-6456-48ef-a927-1cf4d088f353}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\shaders">
+      <UniqueIdentifier>{2d898c80-3d9a-4e79-9ec5-241d33d82be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{00b30cbc-c263-446e-aa13-224646d72d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light">
+      <UniqueIdentifier>{b9a5b1b5-fe6d-4054-9634-664c0c589afd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zpg.cpp">
@@ -66,9 +75,51 @@
     <ClCompile Include="ForestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="SpheresScene2.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SolarSystemScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Firefly.cpp">
+      <Filter>Light</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="lighting.vert">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="constant.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="lambert.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="phong.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="blinn.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="bad_phong.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gift.h">
@@ -132,6 +183,33 @@
       <Filter>Resource Files\Models</Filter>
     </ClInclude>
     <ClInclude Include="ForestScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SolarSystemScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SpheresScene2.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ICameraObserver.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Firefly.h">
+      <Filter>Light</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,19 +11,22 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string> 
 
 #include "Application.h"
 #include "TriangleScene.h"
 #include "SpheresScene.h"
+#include "SpheresScene2.h"
 #include "ForestScene.h"
+#include "SolarSystemScene.h"
+#include "TestScene.h"
 
-//static glm::mat4 Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
-//static glm::mat4 View = glm::lookAt(
-//    glm::vec3(10, 10, 10),
-//    glm::vec3(0, 0, 0),
-//    glm::vec3(0, 1, 0)
-//);
-//static glm::mat4 Model = glm::mat4(1.0f);
+#include "sphere.h"
+#include "suzi_smooth.h"
+#include "tree.h"
+#include "bushes.h"
+#include "gift.h"
+#include "plain.h"
 
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
@@ -41,6 +44,12 @@ static void button_callback(GLFWwindow* window, int button, int action, int mode
         printf("button_callback [%d,%d,%d]\n", button, action, mode);
     }
 }
+
+static float triangle_vertices[] = {
+   0.0f, 0.6f, 0.0f,      1.0f, 0.0f, 0.0f,
+   -0.52f, -0.3f, 0.0f,   0.0f, 1.0f, 0.0f,
+   0.52f, -0.3f, 0.0f,    0.0f, 0.0f, 1.0f
+};
 
 Application::Application() {}
 
@@ -71,17 +80,38 @@ void Application::initialization()
 
     glfwSetWindowUserPointer(window_, this);
 
+    controller_ = std::make_unique<Controller>(&camera_);
+
     // Callbacks
     glfwSetKeyCallback(window_, [](GLFWwindow* w, int key, int sc, int act, int mods){
         if (auto* app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
             app->onKey(key, sc, act, mods);
+
+            app->controller_->onKey(key, sc, act, mods);
         }
     });
     glfwSetWindowFocusCallback(window_, window_focus_callback);
     glfwSetWindowIconifyCallback(window_, window_iconify_callback);
     glfwSetWindowSizeCallback(window_, window_size_callback);
     glfwSetCursorPosCallback(window_, cursor_callback);
-    glfwSetMouseButtonCallback(window_, button_callback);
+
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetCursorPosCallback(window_, [](GLFWwindow* w, double xpos, double ypos) {
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+
+            app->controller_->onMouseMove(xpos, ypos);
+        }
+    });
+    glfwSetMouseButtonCallback(window_, [](GLFWwindow* w, int button, int action, int mods) {
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+            app->controller_->onMouseButton(button, action, mods);
+        }
+        });
+    glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* w, int width, int height) {
+        if (auto app = static_cast<Application*>(glfwGetWindowUserPointer(w))) {
+            app->onWindowResize(width, height);
+        }
+        });
 
     // start GLEW extension handler
     glewExperimental = GL_TRUE;
@@ -100,21 +130,35 @@ void Application::initialization()
     int width, height;
     glfwGetFramebufferSize(window_, &width, &height);
     glViewport(0, 0, width, height);
+
+    loadResources();
 }
 
 void Application::createAndSetupScenes() {
  
     auto scene1 = std::make_unique<TriangleScene>();
-    scene1->setup();
+    scene1->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene1));
 
     auto scene2 = std::make_unique<SpheresScene>();
-    scene2->setup();
+    scene2->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene2));
 
     auto scene3 = std::make_unique<ForestScene>();
-    scene3->setup();
+    scene3->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene3));
+
+    auto scene4 = std::make_unique<SolarSystemScene>();
+    scene4->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene4));
+
+    auto scene5 = std::make_unique<SpheresScene2>();
+    scene5->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene5));
+
+    auto scene6 = std::make_unique<TestScene>();
+    scene6->setup(camera_, resourceManager_);
+    scenes_.push_back(std::move(scene6));
 
     switchScene(0); 
     ready_ = true; 
@@ -122,17 +166,28 @@ void Application::createAndSetupScenes() {
 
 void Application::run()
 {
-    if (!window_) return;
-    if (!ready_) return;
+    if (!window_ || !ready_) return;
 
     glEnable(GL_DEPTH_TEST);
-    while (!glfwWindowShouldClose(window_)) {
 
-        float time = (float)glfwGetTime();
-        currentScene_->update(time);
+    while (!glfwWindowShouldClose(window_)) {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime_ = currentFrame - lastFrame_;
+        lastFrame_ = currentFrame;
+
+        if (controller_) {
+            controller_->update(window_, deltaTime_);
+        }
+        
+        if (currentScene_) {
+            currentScene_->update(currentFrame);
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
-        currentScene_->drawAll();
+        if (currentScene_) {
+            currentScene_->drawAll();
+        }
 
         glfwPollEvents();
         glfwSwapBuffers(window_);
@@ -165,7 +220,52 @@ void Application::onKey(int key, int scancode, int action, int mods) {
         case GLFW_KEY_3:
             switchScene(2);
             break;
+        case GLFW_KEY_4:
+            switchScene(3);
+            break;
+        case GLFW_KEY_5:
+            switchScene(4);
+            break;
+        case GLFW_KEY_6:
+            switchScene(5); 
+            break;
+        case GLFW_KEY_F1:
+            camera_.setFov(45.0f);
+            printf("FOV 45\n");
+            break;
+        case GLFW_KEY_F2:
+            camera_.setFov(90.0f);
+            printf("FOV 90\n");
+            break;
+        case GLFW_KEY_F3:
+            camera_.setFov(130.0f);
+            printf("FOV 130\n");
+            break;
         default: break;
     }
     printf("onKey [%d,%d]\n", key, mods);
+}
+
+void Application::onWindowResize(int width, int height) {
+    glViewport(0, 0, width, height);
+    camera_.onWindowResize(static_cast<float>(width), static_cast<float>(height));
+}
+
+void Application::loadResources() {
+
+    size_t stride = 6 * sizeof(float);
+
+    resourceManager_.createShader("constant", std::string("lighting.vert"), std::string("constant.frag"), camera_);
+    resourceManager_.createShader("lambert", std::string("lighting.vert"), std::string("lambert.frag"), camera_);
+    resourceManager_.createShader("phong", std::string("lighting.vert"), std::string("phong.frag"), camera_);
+    resourceManager_.createShader("blinn", std::string("lighting.vert"), std::string("blinn.frag"), camera_);
+    resourceManager_.createShader("bad_phong", std::string("lighting.vert"), std::string("bad_phong.frag"), camera_);
+
+    resourceManager_.createModel("triangle", triangle_vertices, sizeof(triangle_vertices), stride, true);
+    resourceManager_.createModel("sphere", sphere, sizeof(sphere), stride, true);
+    resourceManager_.createModel("suzi", suzi_smooth, sizeof(suzi_smooth), stride, true);
+    resourceManager_.createModel("tree", tree, sizeof(tree), stride, true);
+    resourceManager_.createModel("bush", bushes, sizeof(bushes), stride, true);
+    resourceManager_.createModel("gift", gift, sizeof(gift), stride, false);
+    resourceManager_.createModel("plain", plain, sizeof(plain), stride, true);
 }

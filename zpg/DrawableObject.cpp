@@ -1,4 +1,4 @@
-#include "DrawableObject.h"
+﻿#include "DrawableObject.h"
 #include "Model.h"
 #include "ShaderProgram.h"
 
@@ -7,11 +7,19 @@
 
 void DrawableObject::draw() const {
 
-    program_->useProgram();
+    if (model_ && program_) {
+        program_->useProgram();
 
-    glm::mat4 modelMatrix = transform_.getMatrix();
+        glm::mat4 modelMatrix = transform_ ? transform_->getMatrix() : glm::mat4(1.0f);
+        program_->setUniform("modelMatrix", modelMatrix);
+        program_->setUniform("objectColor", color_); 
 
-    program_->setUniform("modelMatrix", modelMatrix);
+        model_->draw(mode_, first_, count_);
 
-    model_->draw(mode_, first_, count_);
+        program_->unuseProgram();
+    }
+}
+
+void DrawableObject::setTransform(std::unique_ptr<TransformComponent> transform) {
+    transform_ = std::move(transform);
 }

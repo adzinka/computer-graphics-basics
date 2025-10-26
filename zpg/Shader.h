@@ -5,6 +5,8 @@
 class Shader {
 public:
     Shader(const char* source, GLenum type);
+    Shader(const std::string& filename, GLenum type);
+
     ~Shader();
 
     void attachTo(GLuint programID) const;
