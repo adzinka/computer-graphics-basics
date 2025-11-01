@@ -12,11 +12,11 @@ Firefly::Firefly(Scene* scene, Model* model, ShaderProgram* shader, glm::vec3 ba
     auto light = std::make_unique<Light>(
         basePosition,                       
         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f),  
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f),  
-        0.5f,                               
-        2.5f,                               
-        4.0f                                
+        glm::vec4(1.0f, 0.7f, 0.5f, 1.0f),  
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
+        1.0f,                               
+        0.7f,                               
+        1.8f                                
     );
     myLight_ = scene->addLight(std::move(light));
 

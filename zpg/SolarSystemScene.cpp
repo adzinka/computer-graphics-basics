@@ -65,7 +65,7 @@ void SolarSystemScene::setup(Camera& camera, ResourceManager& manager) {
     moon->setTransform(std::move(moonTransform));
 }
 
-void SolarSystemScene::update(float time) {
+void SolarSystemScene::update(float time, Camera& camera) {
     updateSceneLights();
 
     float earthOrbitSpeed = time * 20.0f;

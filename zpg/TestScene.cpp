@@ -35,6 +35,6 @@ void TestScene::setup(Camera& camera, ResourceManager& manager) {
     goodSphere->setTransform(std::move(goodTransform));
 }
 
-void TestScene::update(float time) {
+void TestScene::update(float time, Camera& camera) {
     updateSceneLights();
 }

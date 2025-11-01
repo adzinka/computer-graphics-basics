@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Camera.h"
+#include "Light.h"
 #include <GLFW/glfw3.h> 
 
 class Controller {
@@ -12,10 +13,13 @@ public:
 
     void update(GLFWwindow* window, float deltaTime);
 
+    void setFlashlight(Light* light) { flashlight_ = light; }
 private:
     Camera* camera_; 
 
     bool isLookingAround_ = false;
     double lastX_ = 0.0;
     double lastY_ = 0.0;
+
+    Light* flashlight_ = nullptr;
 };

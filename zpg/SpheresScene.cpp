@@ -46,6 +46,6 @@ void SpheresScene::setup(Camera& camera, ResourceManager& manager) {
     }
 }
 
-void SpheresScene::update(float time) {
+void SpheresScene::update(float time, Camera& camera) {
     updateSceneLights();
 }

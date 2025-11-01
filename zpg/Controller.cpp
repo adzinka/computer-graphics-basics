@@ -41,5 +41,10 @@ void Controller::update(GLFWwindow* window, float deltaTime) {
 }
 
 void Controller::onKey(int key, int scancode, int action, int mods) {
-    
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (flashlight_) {
+            // Переключаем состояние enabled
+            flashlight_->setEnabled(!flashlight_->isEnabled());
+        }
+    }
 }

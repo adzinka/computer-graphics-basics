@@ -62,6 +62,12 @@ void Scene::updateSceneLights() const {
             shader->setUniform((base + "constant").c_str(), light->getConstant());
             shader->setUniform((base + "linear").c_str(), light->getLinear());
             shader->setUniform((base + "quadratic").c_str(), light->getQuadratic());
+
+            shader->setUniform((base + "direction").c_str(), light->getDirection());
+            shader->setUniform((base + "cutOff").c_str(), light->getCutOff());
+            shader->setUniform((base + "outerCutOff").c_str(), light->getOuterCutOff());
+            shader->setUniform((base + "type").c_str(), static_cast<int>(light->getType()));
+            shader->setUniform((base + "enabled").c_str(), light->isEnabled() ? 1 : 0);
         }
     }
 }

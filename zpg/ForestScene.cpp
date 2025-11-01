@@ -17,6 +17,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     srand(time(NULL));
 
     ShaderProgram* progLambert = manager.getShader("lambert");
+    ShaderProgram* progPhong = manager.getShader("phong");
     ShaderProgram* progConstant = manager.getShader("constant");
 
     Model* giftModel = manager.getModel("gift");
@@ -24,13 +25,44 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     Model* bushModel = manager.getModel("bush");
     Model* plainModel = manager.getModel("plain");
 
-    DrawableObject* ground = addDrawable(plainModel, progLambert, GL_TRIANGLES, plainModel->getVertexCount());
+    DrawableObject* ground = addDrawable(plainModel, progPhong, GL_TRIANGLES, plainModel->getVertexCount());
     ground->setColor(glm::vec3(0.2f, 0.6f, 0.2f));
    
     auto groundComposite = std::make_unique<CompositeTransform>();
     groundComposite->add(std::make_unique<Scale>(glm::vec3(25.0f, 1.0f, 25.0f)));
     groundComposite->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, 0.0f)));
     ground->setTransform(std::move(groundComposite));
+
+    addLight(std::make_unique<Light>(
+        glm::vec3(0.0f, 10.0f, 0.0f),       
+        glm::vec4(0.05f, 0.05f, 0.08f, 1.0f), 
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
+        1.0f, 0.0f, 0.0,                    // Constant, Linear, Quadratic: Затухание 0, так как это общий свет
+        LightType::Directional,                     // Тип
+        glm::vec3(-0.2f, -1.0f, -0.3f),             // Направление света (сверху-слева-сзади)
+        0.0f, 0.0f,
+        true
+    ));
+
+    // --- 2. Spotlight (Фонарик) ---
+    // Углы: 12.5 и 17.5 градусов. Переводим в косинус.
+    float innerCutOff = glm::cos(glm::radians(12.5f));
+    float outerCutOff = glm::cos(glm::radians(17.5f));
+
+    auto flashlight = std::make_unique<Light>(
+        camera.getPosition(),                       // Начальная позиция
+        glm::vec4(0.0f),                            // Ambient 
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          // Diffuse (яркий белый)
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          // Specular 
+        1.0f, 0.09f, 0.032f,                        // Attenuation (средняя дальность, ~20-30 единиц)
+        LightType::Spot,                            // Тип
+        camera.getFront(),                          // Начальное направление
+        innerCutOff, outerCutOff,                   // Углы
+        false                                       // Изначально ВЫКЛЮЧЕН
+    );
+
+    flashlightLight_ = addLight(std::move(flashlight));
 
     int objectCount = 100;
     for (int i = 0; i < objectCount; ++i) {
@@ -43,11 +75,11 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
         DrawableObject* obj = nullptr;
 
         if (i < 50) { 
-            obj = addDrawable(treeModel, progLambert, GL_TRIANGLES, treeModel->getVertexCount());
+            obj = addDrawable(treeModel, progPhong, GL_TRIANGLES, treeModel->getVertexCount());
             obj->setColor(glm::vec3(0.1f, 0.4f, 0.1f));
         }
         else {
-            obj = addDrawable(bushModel, progLambert, GL_TRIANGLES, bushModel->getVertexCount());
+            obj = addDrawable(bushModel, progPhong, GL_TRIANGLES, bushModel->getVertexCount());
             obj->setColor(glm::vec3(0.3f, 0.5f, 0.1f));
         }
 
@@ -89,10 +121,20 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
 
 }
 
-void ForestScene::update(float time) {
-    updateSceneLights();
+void ForestScene::update(float time, Camera& camera) {
 
     for (auto& firefly : fireflies_) {
         firefly->update(time);
     }
+
+    if (flashlightLight_) {
+        // Устанавливаем позицию камеры
+        flashlightLight_->setPosition(camera.getPosition());
+        // Устанавливаем направление взгляда камеры
+        flashlightLight_->setDirection(camera.getFront());
+        // Флаг enabled_ управляется в Controller
+    }
+
+    updateSceneLights();
+
 }

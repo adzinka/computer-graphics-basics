@@ -23,6 +23,7 @@ public:
     glm::mat4 getProjectionMatrix() const;
 
     const glm::vec3& getPosition() const { return position_; }
+    const glm::vec3& getFront() const { return front_; }
 
     void addObserver(ICameraObserver* observer);
     void removeObserver(ICameraObserver* observer);

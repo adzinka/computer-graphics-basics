@@ -6,7 +6,7 @@ class Rotate;
 class SolarSystemScene : public Scene {
 public:
     void setup(Camera& camera, ResourceManager& manager) override;
-    void update(float time) override;
+    void update(float time, Camera& camera) override;
 
 private:
     Rotate* earthOrbitRotation_ = nullptr;

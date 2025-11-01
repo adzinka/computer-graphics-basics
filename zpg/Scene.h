@@ -17,7 +17,7 @@ public:
     virtual ~Scene() = default;
 
     virtual void setup(Camera& camera, ResourceManager& manager) = 0;
-    virtual void update(float time) = 0;
+    virtual void update(float time, Camera& camera) = 0;
 
     void drawAll() const;
 

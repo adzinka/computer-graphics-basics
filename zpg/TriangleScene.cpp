@@ -20,7 +20,7 @@ void TriangleScene::setup(Camera& camera, ResourceManager& manager) {
     triObj->setTransform(std::move(transform));
 }
 
-void TriangleScene::update(float time) {
+void TriangleScene::update(float time, Camera& camera) {
     if (triangleRotation_) {
         triangleRotation_->setAngle(time * 80.0f);
     }
