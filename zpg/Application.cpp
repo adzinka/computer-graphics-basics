@@ -200,18 +200,14 @@ void Application::switchScene(int index) {
         printf("Switched to scene %d\n", index);
 
         if (controller_) {
-            // Пытаемся безопасно преобразовать текущую сцену к ForestScene
             ForestScene* forestScene = dynamic_cast<ForestScene*>(currentScene_);
 
             if (forestScene) {
-                // Если сцена - ForestScene: получаем фонарик и передаем его контроллеру
                 Light* flashlight = forestScene->getFlashlightLight();
                 controller_->setFlashlight(flashlight);
                 printf("Flashlight linked to Controller for ForestScene.\n");
             }
             else {
-                // Если сцена ЛЮБАЯ другая: сбрасываем ссылку на фонарик в контроллере.
-                // Это предотвратит ошибки при нажатии 'F' в других сценах.
                 controller_->setFlashlight(nullptr);
             }
         }
