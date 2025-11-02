@@ -8,7 +8,6 @@
 
 void SolarSystemScene::setup(Camera& camera, ResourceManager& manager) {
 
-
     addLight(std::make_unique<Light>(
         glm::vec3(1.0f, 1.0f, 1.0f),                
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f),         
@@ -34,14 +33,17 @@ void SolarSystemScene::setup(Camera& camera, ResourceManager& manager) {
     earth->setColor(glm::vec3(0.3f, 0.4f, 1.0f));
 
     auto earthTransform = std::make_unique<CompositeTransform>();
-
-
     earthTransform->add(std::make_unique<Scale>(glm::vec3(0.5f)));
-    earthAxisRotation_ = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    earthTransform->add(std::unique_ptr<Rotate>(earthAxisRotation_));
+
+    auto earthAxisRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    earthAxisRotation_ = earthAxisRot.get(); // Сохраняем указатель
+    earthTransform->add(std::move(earthAxisRot)); // Передаём владение
+
     earthTransform->add(std::make_unique<Translate>(glm::vec3(5.0f, 0.0f, 0.0f)));
-    earthOrbitRotation_ = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    earthTransform->add(std::unique_ptr<Rotate>(earthOrbitRotation_));
+
+    auto earthOrbitRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    earthOrbitRotation_ = earthOrbitRot.get();
+    earthTransform->add(std::move(earthOrbitRot));
 
     earth->setTransform(std::move(earthTransform));
 
@@ -49,18 +51,22 @@ void SolarSystemScene::setup(Camera& camera, ResourceManager& manager) {
     moon->setColor(glm::vec3(0.5f, 0.5f, 0.5f));
 
     auto moonTransform = std::make_unique<CompositeTransform>();
-
     moonTransform->add(std::make_unique<Scale>(glm::vec3(0.2f)));
     moonTransform->add(std::make_unique<Translate>(glm::vec3(1.0f, 0.0f, 0.0f)));
-    moonOrbitRotation_ = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    moonTransform->add(std::unique_ptr<Rotate>(moonOrbitRotation_));
 
+    auto moonOrbitRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    moonOrbitRotation_ = moonOrbitRot.get();
+    moonTransform->add(std::move(moonOrbitRot));
 
-    moonCopy_EarthAxis_ = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    moonTransform->add(std::unique_ptr<Rotate>(moonCopy_EarthAxis_));
+    auto moonEarthAxisRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    moonCopy_EarthAxis_ = moonEarthAxisRot.get();
+    moonTransform->add(std::move(moonEarthAxisRot));
+
     moonTransform->add(std::make_unique<Translate>(glm::vec3(5.0f, 0.0f, 0.0f)));
-    moonCopy_EarthOrbit_ = new Rotate(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    moonTransform->add(std::unique_ptr<Rotate>(moonCopy_EarthOrbit_));
+
+    auto moonEarthOrbitRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    moonCopy_EarthOrbit_ = moonEarthOrbitRot.get();
+    moonTransform->add(std::move(moonEarthOrbitRot));
 
     moon->setTransform(std::move(moonTransform));
 }
