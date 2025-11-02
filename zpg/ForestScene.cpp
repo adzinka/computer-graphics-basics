@@ -38,28 +38,22 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
         glm::vec4(0.05f, 0.05f, 0.08f, 1.0f), 
         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
-        1.0f, 0.0f, 0.0,                    // Constant, Linear, Quadratic: Затухание 0, так как это общий свет
-        LightType::Directional,                     // Тип
-        glm::vec3(-0.2f, -1.0f, -0.3f),             // Направление света (сверху-слева-сзади)
-        0.0f, 0.0f,
-        true
+        1.0f, 0.0f, 0.0                    
     ));
 
-    // --- 2. Spotlight (Фонарик) ---
-    // Углы: 12.5 и 17.5 градусов. Переводим в косинус.
     float innerCutOff = glm::cos(glm::radians(12.5f));
     float outerCutOff = glm::cos(glm::radians(17.5f));
 
     auto flashlight = std::make_unique<Light>(
-        camera.getPosition(),                       // Начальная позиция
-        glm::vec4(0.0f),                            // Ambient 
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          // Diffuse (яркий белый)
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          // Specular 
-        1.0f, 0.09f, 0.032f,                        // Attenuation (средняя дальность, ~20-30 единиц)
-        LightType::Spot,                            // Тип
-        camera.getFront(),                          // Начальное направление
-        innerCutOff, outerCutOff,                   // Углы
-        false                                       // Изначально ВЫКЛЮЧЕН
+        camera.getPosition(),                       
+        glm::vec4(0.0f),                            
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),         
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          
+        1.0f, 0.09f, 0.032f,                        
+        LightType::Spot,                           
+        camera.getFront(),                          
+        innerCutOff, outerCutOff,                   
+        false                                       
     );
 
     flashlightLight_ = addLight(std::move(flashlight));
@@ -107,7 +101,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
 
     Model* sphereModel = manager.getModel("sphere");
     ShaderProgram* constantShader = manager.getShader("constant");
-    int fireflyCount = 10; 
+    int fireflyCount = 5; 
 
     for (int i = 0; i < fireflyCount; ++i) {
         float x = (rand() / (float)RAND_MAX) * 40.0f - 20.0f; 
@@ -128,11 +122,8 @@ void ForestScene::update(float time, Camera& camera) {
     }
 
     if (flashlightLight_) {
-        // Устанавливаем позицию камеры
         flashlightLight_->setPosition(camera.getPosition());
-        // Устанавливаем направление взгляда камеры
         flashlightLight_->setDirection(camera.getFront());
-        // Флаг enabled_ управляется в Controller
     }
 
     updateSceneLights();

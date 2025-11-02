@@ -9,13 +9,10 @@
 
 int main(void)
 {
-    Application* app = new Application();
-    app->initialization(); 
+    Application app;
+    app.initialization(); 
+    app.createAndSetupScenes();
+    app.run(); 
 
-    app->createAndSetupScenes();
-
-    app->run(); 
-
-    delete app;
     return 0;
 }
