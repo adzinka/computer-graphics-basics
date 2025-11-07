@@ -36,8 +36,8 @@ void SolarSystemScene::setup(Camera& camera, ResourceManager& manager) {
     earthTransform->add(std::make_unique<Scale>(glm::vec3(0.5f)));
 
     auto earthAxisRot = std::make_unique<Rotate>(0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-    earthAxisRotation_ = earthAxisRot.get(); // Сохраняем указатель
-    earthTransform->add(std::move(earthAxisRot)); // Передаём владение
+    earthAxisRotation_ = earthAxisRot.get(); 
+    earthTransform->add(std::move(earthAxisRot)); 
 
     earthTransform->add(std::make_unique<Translate>(glm::vec3(5.0f, 0.0f, 0.0f)));
 

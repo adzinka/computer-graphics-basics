@@ -5,10 +5,10 @@ Camera::Camera()
     worldUp_(0.0f, 1.0f, 0.0f),      
     yaw_(-90.0f),                      
     pitch_(-30.0f),
-    fov_(45.0f),
+    fov_(DEFAULT_FOV),
     aspectRatio_(800.0f / 600.0f),        
-    nearPlane_(0.1f),
-    farPlane_(100.0f)
+    nearPlane_(DEFAULT_NEAR_PLANE),
+    farPlane_(DEFAULT_FAR_PLANE)
 {
     updateCameraVectors();
 }
@@ -22,17 +22,16 @@ glm::mat4 Camera::getProjectionMatrix() const {
 }
 
 void Camera::onMouseMove(float xoffset, float yoffset) {
-    float sensitivity = 0.1f; 
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    xoffset *= mouseSensitivity_;
+    yoffset *= mouseSensitivity_;
 
     yaw_ += xoffset;
     pitch_ += yoffset;
 
-    if (pitch_ > 89.0f)
-        pitch_ = 89.0f;
-    if (pitch_ < -89.0f)
-        pitch_ = -89.0f;
+    if (pitch_ > MAX_PITCH)
+        pitch_ = MAX_PITCH;
+    if (pitch_ < MIN_PITCH)
+        pitch_ = MIN_PITCH;
 
     updateCameraVectors();
 }
@@ -94,7 +93,7 @@ void Camera::setPosition(const glm::vec3& pos) {
 }
 
 void Camera::setFov(float fov) {
-    fov_ = fov; 
+    fov_ = glm::clamp(fov, MIN_FOV, MAX_FOV);
 
     notify();
 }

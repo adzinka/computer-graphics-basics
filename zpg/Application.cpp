@@ -51,6 +51,16 @@ static float triangle_vertices[] = {
    0.52f, -0.3f, 0.0f,    0.0f, 0.0f, 1.0f
 };
 
+const float triangle[48] = {
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+     0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
+     0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
+     0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
+    -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f
+};
+
 Application::Application() {}
 
 Application::~Application() {
@@ -200,15 +210,14 @@ void Application::switchScene(int index) {
         printf("Switched to scene %d\n", index);
 
         if (controller_) {
-            ForestScene* forestScene = dynamic_cast<ForestScene*>(currentScene_);
+            Light* flashlight = currentScene_->getFlashlight();
+            controller_->setFlashlight(flashlight);
 
-            if (forestScene) {
-                Light* flashlight = forestScene->getFlashlightLight();
-                controller_->setFlashlight(flashlight);
-                printf("Flashlight linked to Controller for ForestScene.\n");
+            if (flashlight) {
+                printf("Flashlight linked to Controller.\n");
             }
             else {
-                controller_->setFlashlight(nullptr);
+                printf("No flashlight in this scene.\n");
             }
         }
     }
@@ -281,4 +290,10 @@ void Application::loadResources() {
     resourceManager_.createModel("bush", bushes, sizeof(bushes), stride, true);
     resourceManager_.createModel("gift", gift, sizeof(gift), stride, false);
     resourceManager_.createModel("plain", plain, sizeof(plain), stride, true);
+
+    resourceManager_.createModel("triangle2", triangle, sizeof(triangle), stride, true);
+
+    resourceManager_.loadModel("cube", std::string("cube.obj"));
+    resourceManager_.loadModel("formula1", std::string("formula1.obj"));
+    resourceManager_.loadModel("house", std::string("house.obj"));
 }

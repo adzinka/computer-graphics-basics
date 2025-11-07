@@ -8,6 +8,16 @@
 
 class Camera {
 public:
+    static constexpr float DEFAULT_MOVEMENT_SPEED = 2.5f;
+    static constexpr float DEFAULT_MOUSE_SENSITIVITY = 0.1f;
+    static constexpr float DEFAULT_FOV = 45.0f;
+    static constexpr float MIN_FOV = 1.0f;
+    static constexpr float MAX_FOV = 179.0f;
+    static constexpr float MIN_PITCH = -89.0f;
+    static constexpr float MAX_PITCH = 89.0f;
+    static constexpr float DEFAULT_NEAR_PLANE = 0.1f;
+    static constexpr float DEFAULT_FAR_PLANE = 100.0f;
+
     Camera();
 
     enum Camera_Movement {
@@ -33,6 +43,8 @@ public:
     void setPosition(const glm::vec3& pos);
     void setFov(float fov);
 
+    void setMovementSpeed(float speed) { movementSpeed_ = speed; }
+    void setMouseSensitivity(float sensitivity) { mouseSensitivity_ = sensitivity; }
 private:
     void updateCameraVectors();
     void notify() const;
@@ -50,6 +62,9 @@ private:
     float aspectRatio_;  
     float nearPlane_;    
     float farPlane_;    
+
+    float movementSpeed_ = DEFAULT_MOVEMENT_SPEED;
+    float mouseSensitivity_ = DEFAULT_MOUSE_SENSITIVITY;
 
     std::vector<ICameraObserver*> observers_;
 };

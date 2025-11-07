@@ -13,7 +13,7 @@ public:
     void setup(Camera& camera, ResourceManager& manager) override;
     void update(float time, Camera& camera) override;
 
-    Light* getFlashlightLight() const { return flashlightLight_; }
+    Light* getFlashlight() override { return flashlightLight_; }
 
 private:
     std::vector<std::unique_ptr<Firefly>> fireflies_;

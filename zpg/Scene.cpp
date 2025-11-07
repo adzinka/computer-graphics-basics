@@ -69,5 +69,7 @@ void Scene::updateSceneLights() const {
             shader->setUniform((base + "type").c_str(), static_cast<int>(light->getType()));
             shader->setUniform((base + "enabled").c_str(), light->isEnabled() ? 1 : 0);
         }
+
+        shader->unuseProgram();
     }
 }

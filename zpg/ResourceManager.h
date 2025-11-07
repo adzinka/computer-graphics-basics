@@ -8,8 +8,9 @@
 
 class ResourceManager {
 public:
-    void createShader(const std::string& name, const char* vsSrc, const char* fsSrc, Camera& camera);
     void createModel(const std::string& name, const void* data, size_t dataSize, size_t stride, bool hasColor);
+
+    void loadModel(const std::string& name, const std::string& objFilePath);
 
     void createShader(const std::string& name, const std::string& vsFile, const std::string& fsFile, Camera& camera);
 
@@ -19,4 +20,5 @@ public:
 private:
     std::map<std::string, std::unique_ptr<ShaderProgram>> shaders_;
     std::map<std::string, std::unique_ptr<Model>> models_;
-}; 
+
+};

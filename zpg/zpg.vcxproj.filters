@@ -43,6 +43,9 @@
     <Filter Include="Light">
       <UniqueIdentifier>{b9a5b1b5-fe6d-4054-9634-664c0c589afd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\assets">
+      <UniqueIdentifier>{7ca4e7e0-fea0-4551-896d-a26b79768dd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zpg.cpp">
@@ -99,6 +102,12 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\hw7\ShaderLoader.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -118,6 +127,21 @@
       <Filter>Shader\shaders</Filter>
     </None>
     <None Include="bad_phong.frag">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="cube.mtl">
+      <Filter>Resource Files\assets</Filter>
+    </None>
+    <None Include="formula1.mtl">
+      <Filter>Resource Files\assets</Filter>
+    </None>
+    <None Include="house.mtl">
+      <Filter>Resource Files\assets</Filter>
+    </None>
+    <None Include="texture.vert">
+      <Filter>Shader\shaders</Filter>
+    </None>
+    <None Include="texture.frag">
       <Filter>Shader\shaders</Filter>
     </None>
   </ItemGroup>
@@ -212,5 +236,28 @@
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\hw7\ShaderLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cube.obj">
+      <Filter>Resource Files\assets</Filter>
+    </Text>
+    <Text Include="formula1.obj">
+      <Filter>Resource Files\assets</Filter>
+    </Text>
+    <Text Include="house.obj">
+      <Filter>Resource Files\assets</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -6,22 +6,21 @@
 #include "CompositeTransform.h"
 
 Firefly::Firefly(Scene* scene, Model* model, ShaderProgram* shader, glm::vec3 basePosition)
-    : basePosition_(basePosition)
-{
-
-    auto light = std::make_unique<Light>(
+    : basePosition_(basePosition) {
+    auto fireflyLight = std::make_unique<Light>(
         basePosition,                       
         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
-        glm::vec4(1.0f, 0.7f, 0.5f, 1.0f),  
+        glm::vec4(2.0f, 1.4f, 1.0f, 1.0f),  
         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
         1.0f,                               
-        0.7f,                               
-        1.8f                                
+        4.5f,                               
+        6.0f                                
     );
-    myLight_ = scene->addLight(std::move(light));
+
+    myLight_ = scene->addLight(std::move(fireflyLight));
 
     myObject_ = scene->addDrawable(model, shader, GL_TRIANGLES, model->getVertexCount());
-    myObject_->setColor(glm::vec3(1.0f, 1.0f, 0.5f)); 
+    myObject_->setColor(glm::vec3(1.0f, 1.0f, 1.0f)); 
 
     timeOffset_ = (rand() / (float)RAND_MAX) * 1000.0f;
 

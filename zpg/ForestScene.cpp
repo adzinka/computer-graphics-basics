@@ -24,6 +24,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     Model* treeModel = manager.getModel("tree");
     Model* bushModel = manager.getModel("bush");
     Model* plainModel = manager.getModel("plain");
+    Model* houseModel = manager.getModel("house");
 
     DrawableObject* ground = addDrawable(plainModel, progPhong, GL_TRIANGLES, plainModel->getVertexCount());
     ground->setColor(glm::vec3(0.2f, 0.6f, 0.2f));
@@ -33,27 +34,20 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     groundComposite->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, 0.0f)));
     ground->setTransform(std::move(groundComposite));
 
-    addLight(std::make_unique<Light>(
-        glm::vec3(0.0f, 10.0f, 0.0f),       
-        glm::vec4(0.05f, 0.05f, 0.08f, 1.0f), 
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),  
-        1.0f, 0.0f, 0.0                    
+    addLight(Light::createDirectionalLight(
+        glm::vec3(-0.2f, -1.0f, -0.3f),
+        glm::vec4(0.05f, 0.05f, 0.08f, 1.0f),
+        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
     ));
 
-    float innerCutOff = glm::cos(glm::radians(12.5f));
-    float outerCutOff = glm::cos(glm::radians(17.5f));
-
-    auto flashlight = std::make_unique<Light>(
-        camera.getPosition(),                       
-        glm::vec4(0.0f),                            
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),         
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),          
-        1.0f, 0.09f, 0.032f,                        
-        LightType::Spot,                           
-        camera.getFront(),                          
-        innerCutOff, outerCutOff,                   
-        false                                       
+    auto flashlight = Light::createSpotlight(
+        camera.getPosition(),
+        camera.getFront(),
+        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+        Light::SPOTLIGHT_NARROW_INNER,
+        Light::SPOTLIGHT_NARROW_OUTER,
+        Light::ATTENUATION_MEDIUM,
+        false 
     );
 
     flashlightLight_ = addLight(std::move(flashlight));
@@ -112,6 +106,20 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
             this, sphereModel, constantShader, glm::vec3(x, y, z)
         ));
     }
+
+    DrawableObject* house = addDrawable(
+        houseModel,                  
+        progPhong,                  
+        GL_TRIANGLES,                
+        houseModel->getVertexCount() 
+    );
+
+    house->setColor(glm::vec3(0.8f, 0.2f, 0.2f));
+
+    auto houseTransform = std::make_unique<CompositeTransform>();
+    houseTransform->add(std::make_unique<Scale>(glm::vec3(1.5f)));
+    houseTransform->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, -5.0f)));
+    house->setTransform(std::move(houseTransform));
 
 }
 

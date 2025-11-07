@@ -130,7 +130,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\hw7\ShaderLoader.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
@@ -154,12 +156,23 @@
     <None Include="bad_phong.frag" />
     <None Include="blinn.frag" />
     <None Include="constant.frag" />
+    <None Include="cube.mtl" />
+    <None Include="formula1.mtl" />
+    <None Include="house.mtl" />
     <None Include="lambert.frag" />
     <None Include="lighting.vert" />
     <None Include="phong.frag" />
+    <None Include="texture.frag" />
+    <None Include="texture.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\hw7\ShaderLoader.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="bushes.h" />
     <ClInclude Include="Camera.h" />
@@ -185,10 +198,26 @@
     <ClInclude Include="SpheresScene2.h" />
     <ClInclude Include="suzi_flat.h" />
     <ClInclude Include="suzi_smooth.h" />
+    <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Translate.h" />
     <ClInclude Include="tree.h" />
     <ClInclude Include="TriangleScene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cube.obj">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="formula1.obj">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="house.obj">
+      <FileType>Document</FileType>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

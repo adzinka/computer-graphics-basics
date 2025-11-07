@@ -8,6 +8,16 @@ struct Light {
     vec4 position;   
     vec4 ambient;
     vec4 diffuse;
+    vec4 specular;   
+    float constant;   
+    float linear;    
+    float quadratic;
+    
+    vec3 direction;      
+    float cutOff;        
+    float outerCutOff;  
+    int type;            
+    int enabled;         
 };
 
 uniform vec3 objectColor;
@@ -23,11 +33,45 @@ void main()
 
     for (int i = 0; i < numberOfLights; i++)
     {
-        vec3 ambient = lights[i].ambient.rgb;
 
-        vec3 lightDir = normalize(lights[i].position.xyz - worldPosition.xyz);
+        if (lights[i].enabled == 0) {
+            continue;
+        }
+
+        vec3 lightDir;
+        float attenuation = 1.0;
+        float intensity = 1.0;
+
+        if (lights[i].type == 0) {
+            // Point Light
+            lightDir = normalize(lights[i].position.xyz - worldPosition.xyz);
+            float dist = length(lights[i].position.xyz - worldPosition.xyz);
+            attenuation = 1.0 / (lights[i].constant + 
+                               lights[i].linear * dist + 
+                               lights[i].quadratic * (dist * dist));
+        }
+        else if (lights[i].type == 1) {
+            // Directional Light
+            lightDir = normalize(-lights[i].direction);
+            attenuation = 1.0;
+        }
+        else if (lights[i].type == 2) {
+            // Spot Light
+            lightDir = normalize(lights[i].position.xyz - worldPosition.xyz);
+            float dist = length(lights[i].position.xyz - worldPosition.xyz);
+            attenuation = 1.0 / (lights[i].constant + 
+                               lights[i].linear * dist + 
+                               lights[i].quadratic * (dist * dist));
+            
+            float theta = dot(lightDir, normalize(-lights[i].direction));
+            float epsilon = lights[i].cutOff - lights[i].outerCutOff;
+            intensity = clamp((theta - lights[i].outerCutOff) / epsilon, 0.0, 1.0);
+        }
+
+        vec3 ambient = lights[i].ambient.rgb * attenuation;
+
         float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * lights[i].diffuse.rgb;
+        vec3 diffuse = diff * lights[i].diffuse.rgb * attenuation * intensity;
 
         totalLighting += (ambient + diffuse);
     }

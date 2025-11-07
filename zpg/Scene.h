@@ -23,6 +23,7 @@ public:
 
     Light* addLight(std::unique_ptr<Light> light);
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
+    virtual Light* getFlashlight() { return nullptr; }
 
 protected:
     std::vector<std::unique_ptr<DrawableObject>> drawables_;
