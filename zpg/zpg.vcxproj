@@ -133,6 +133,7 @@
     <ClCompile Include="..\..\hw7\ShaderLoader.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Controller.cpp" />
@@ -148,10 +149,13 @@
     <ClCompile Include="SolarSystemScene.cpp" />
     <ClCompile Include="SpheresScene.cpp" />
     <ClCompile Include="SpheresScene2.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TriangleScene.cpp" />
     <ClCompile Include="zpg.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\Downloads\shrek\fiona.mtl" />
+    <None Include="..\..\..\..\Downloads\shrek\toiled.mtl" />
     <None Include=".gitignore" />
     <None Include="bad_phong.frag" />
     <None Include="blinn.frag" />
@@ -162,8 +166,12 @@
     <None Include="lambert.frag" />
     <None Include="lighting.vert" />
     <None Include="phong.frag" />
+    <None Include="shrek.mtl" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
     <None Include="texture.frag" />
     <None Include="texture.vert" />
+    <None Include="texture_phong.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\hw7\ShaderLoader.h">
@@ -172,6 +180,10 @@
     </ClInclude>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="plain_uv.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="sky_cube.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="bushes.h" />
@@ -198,6 +210,7 @@
     <ClInclude Include="SpheresScene2.h" />
     <ClInclude Include="suzi_flat.h" />
     <ClInclude Include="suzi_smooth.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Translate.h" />
@@ -216,6 +229,22 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="house.obj">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\..\Downloads\shrek\fiona.obj">
+      <FileType>Document</FileType>
+    </Text>
+    <Text Include="..\..\..\..\Downloads\shrek\toiled.obj">
+      <FileType>Document</FileType>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="zpg.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="shrek.obj">
       <FileType>Document</FileType>
     </Text>
   </ItemGroup>

@@ -27,6 +27,8 @@
 #include "bushes.h"
 #include "gift.h"
 #include "plain.h"
+#include "plain_uv.h"
+#include "sky_cube.h"
 
 static void error_callback(int error, const char* description) { fputs(description, stderr); }
 
@@ -49,16 +51,6 @@ static float triangle_vertices[] = {
    0.0f, 0.6f, 0.0f,      1.0f, 0.0f, 0.0f,
    -0.52f, -0.3f, 0.0f,   0.0f, 1.0f, 0.0f,
    0.52f, -0.3f, 0.0f,    0.0f, 0.0f, 1.0f
-};
-
-const float triangle[48] = {
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f,
-     0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-     0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f,
-    -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f
 };
 
 Application::Application() {}
@@ -196,7 +188,7 @@ void Application::run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  
         if (currentScene_) {
-            currentScene_->drawAll();
+            currentScene_->drawAll(camera_);
         }
 
         glfwPollEvents();
@@ -277,11 +269,16 @@ void Application::loadResources() {
 
     size_t stride = 6 * sizeof(float);
 
-    resourceManager_.createShader("constant", std::string("lighting.vert"), std::string("constant.frag"), camera_);
-    resourceManager_.createShader("lambert", std::string("lighting.vert"), std::string("lambert.frag"), camera_);
-    resourceManager_.createShader("phong", std::string("lighting.vert"), std::string("phong.frag"), camera_);
-    resourceManager_.createShader("blinn", std::string("lighting.vert"), std::string("blinn.frag"), camera_);
-    resourceManager_.createShader("bad_phong", std::string("lighting.vert"), std::string("bad_phong.frag"), camera_);
+    resourceManager_.createShader("constant", std::string("shaders/lighting.vert"), std::string("shaders/constant.frag"), &camera_);
+    resourceManager_.createShader("lambert", std::string("shaders/lighting.vert"), std::string("shaders/lambert.frag"), &camera_);
+    resourceManager_.createShader("phong", std::string("shaders/lighting.vert"), std::string("shaders/phong.frag"), &camera_);
+    resourceManager_.createShader("blinn", std::string("shaders/lighting.vert"), std::string("shaders/blinn.frag"), &camera_);
+    resourceManager_.createShader("bad_phong", std::string("shaders/lighting.vert"), std::string("shaders/bad_phong.frag"), &camera_);
+
+    resourceManager_.createShader("texture", "shaders/texture.vert", "shaders/texture.frag", &camera_);
+    resourceManager_.createShader("texture_light", "shaders/texture.vert", "shaders/texture_phong.frag", &camera_);
+
+    resourceManager_.createShader("skybox", "shaders/skybox.vert", "shaders/skybox.frag", nullptr);
 
     resourceManager_.createModel("triangle", triangle_vertices, sizeof(triangle_vertices), stride, true);
     resourceManager_.createModel("sphere", sphere, sizeof(sphere), stride, true);
@@ -291,9 +288,37 @@ void Application::loadResources() {
     resourceManager_.createModel("gift", gift, sizeof(gift), stride, false);
     resourceManager_.createModel("plain", plain, sizeof(plain), stride, true);
 
-    resourceManager_.createModel("triangle2", triangle, sizeof(triangle), stride, true);
+    resourceManager_.createModel("skybox_cube", skycube, sizeof(skycube), 3 * sizeof(float), false);
 
-    resourceManager_.loadModel("cube", std::string("cube.obj"));
-    resourceManager_.loadModel("formula1", std::string("formula1.obj"));
-    resourceManager_.loadModel("house", std::string("house.obj"));
+    size_t stride_uv = 8 * sizeof(float);  
+
+    resourceManager_.createModel("plain_uv", plain_uv, sizeof(plain_uv), stride_uv, true);
+
+    resourceManager_.loadModel("cube", std::string("assets/cube.obj"));
+    resourceManager_.loadModel("formula1", std::string("assets/formula1.obj"));
+    resourceManager_.loadModel("house", std::string("assets/house.obj"));
+    resourceManager_.loadModel("shrek", "assets/shrek.obj");
+    resourceManager_.loadModel("fiona", "assets/fiona.obj");
+    resourceManager_.loadModel("toiled", "assets/toiled.obj");
+
+    resourceManager_.loadTexture("grass", "assets/grass.png");
+    resourceManager_.loadTexture("wood", "assets/wooden_fence.png");
+    resourceManager_.loadTexture("shrek_texture", "assets/shrek.png");
+    resourceManager_.loadTexture("fiona_texture", "assets/fiona.png");
+    resourceManager_.loadTexture("toiled_texture", "assets/toiled.jpg");
+
+    int maxTextureUnits;
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    printf("Max texture units: %d\n", maxTextureUnits);
+
+    std::vector<std::string> faces = {
+        "assets/posx.jpg",
+        "assets/negx.jpg",
+        "assets/posy.jpg",
+        "assets/negy.jpg",
+        "assets/posz.jpg",
+        "assets/negz.jpg"
+    };
+    resourceManager_.loadCubemap("mainSkybox", faces);
+
 }

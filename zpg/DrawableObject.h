@@ -1,6 +1,7 @@
 #pragma once
 #include <GL/glew.h>
 #include "CompositeTransform.h"
+#include "Texture.h"
 
 class Model;
 class ShaderProgram;
@@ -21,6 +22,10 @@ public:
 
     ShaderProgram* getProgram() const { return program_; }
     void setColor(const glm::vec3& color) { color_ = color; }
+
+    void setTexture(Texture* texture) { texture_ = texture; }
+    Texture* getTexture() const { return texture_; }
+
 private:
     Model* model_ = nullptr;
     ShaderProgram* program_ = nullptr;
@@ -30,4 +35,5 @@ private:
     std::unique_ptr<TransformComponent> transform_ = nullptr;
 
     glm::vec3 color_ = glm::vec3(1.0f);
+    Texture* texture_ = nullptr;
 };

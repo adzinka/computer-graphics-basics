@@ -1,5 +1,8 @@
 ﻿#include "ForestScene.h"
 #include "ResourceManager.h"
+#include "Camera.h"
+#include "Model.h"
+#include "ShaderProgram.h"
 
 #include "Translate.h"
 #include "Rotate.h"
@@ -7,6 +10,8 @@
 #include "CompositeTransform.h"
 #include "Firefly.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <cstdlib>
 #include <ctime>
 
@@ -14,11 +19,13 @@ ForestScene::ForestScene() {}
 ForestScene::~ForestScene() {}
 
 void ForestScene::setup(Camera& camera, ResourceManager& manager) {
+    camera_ = &camera;
     srand(time(NULL));
 
     ShaderProgram* progLambert = manager.getShader("lambert");
     ShaderProgram* progPhong = manager.getShader("phong");
     ShaderProgram* progConstant = manager.getShader("constant");
+    ShaderProgram* progTextureLit = manager.getShader("texture_light");
 
     Model* giftModel = manager.getModel("gift");
     Model* treeModel = manager.getModel("tree");
@@ -26,8 +33,19 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     Model* plainModel = manager.getModel("plain");
     Model* houseModel = manager.getModel("house");
 
-    DrawableObject* ground = addDrawable(plainModel, progPhong, GL_TRIANGLES, plainModel->getVertexCount());
-    ground->setColor(glm::vec3(0.2f, 0.6f, 0.2f));
+    Model* shrekModel = manager.getModel("shrek");
+    Model* fionaModel = manager.getModel("fiona");
+    Model* toiletModel = manager.getModel("toiled");
+
+    Texture* grassTexture = manager.getTexture("grass");
+    Texture* shrekTexture = manager.getTexture("shrek_texture");
+    Texture* fionaTexture = manager.getTexture("fiona_texture");
+    Texture* toiletTexture = manager.getTexture("toiled_texture");
+
+    Model* plainUVModel = manager.getModel("plain_uv");
+
+    DrawableObject* ground = addDrawable(plainUVModel, progTextureLit, GL_TRIANGLES, plainModel->getVertexCount());
+    ground->setTexture(grassTexture);
    
     auto groundComposite = std::make_unique<CompositeTransform>();
     groundComposite->add(std::make_unique<Scale>(glm::vec3(25.0f, 1.0f, 25.0f)));
@@ -37,7 +55,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     addLight(Light::createDirectionalLight(
         glm::vec3(-0.2f, -1.0f, -0.3f),
         glm::vec4(0.05f, 0.05f, 0.08f, 1.0f),
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)
+        glm::vec4(0.1f, 0.2f, 0.3f, 1.0f)
     ));
 
     auto flashlight = Light::createSpotlight(
@@ -51,6 +69,39 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     );
 
     flashlightLight_ = addLight(std::move(flashlight));
+
+    if (shrekModel && shrekTexture) {
+        DrawableObject* shrek = addDrawable(shrekModel, progTextureLit, GL_TRIANGLES, shrekModel->getVertexCount());
+        shrek->setTexture(shrekTexture);
+
+        auto shrekTransform = std::make_unique<CompositeTransform>();
+        shrekTransform->add(std::make_unique<Scale>(glm::vec3(1.0f)));  
+        shrekTransform->add(std::make_unique<Rotate>(180.0f, glm::vec3(0.0f, 1.0f, 0.0f)));  
+        shrekTransform->add(std::make_unique<Translate>(glm::vec3(-3.0f, 0.0f, -5.0f)));  
+        shrek->setTransform(std::move(shrekTransform));
+    }
+
+    if (fionaModel && fionaTexture) {
+        DrawableObject* fiona = addDrawable(fionaModel, progTextureLit, GL_TRIANGLES, fionaModel->getVertexCount());
+        fiona->setTexture(fionaTexture);
+
+        auto fionaTransform = std::make_unique<CompositeTransform>();
+        fionaTransform->add(std::make_unique<Scale>(glm::vec3(1.0f)));
+        fionaTransform->add(std::make_unique<Rotate>(180.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+        fionaTransform->add(std::make_unique<Translate>(glm::vec3(5.0f, 0.0f, -10.0f)));
+        fiona->setTransform(std::move(fionaTransform));
+    }
+
+    if (toiletModel && toiletTexture) {
+        DrawableObject* toilet = addDrawable(toiletModel, progTextureLit, GL_TRIANGLES, toiletModel->getVertexCount());
+        toilet->setTexture(toiletTexture);
+
+        auto toiletTransform = std::make_unique<CompositeTransform>();
+        toiletTransform->add(std::make_unique<Scale>(glm::vec3(1.2f)));  
+        toiletTransform->add(std::make_unique<Rotate>(90.0f, glm::vec3(0.0f, 1.0f, 0.0f)));  
+        toiletTransform->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, -8.0f)));  
+        toilet->setTransform(std::move(toiletTransform));
+    }
 
     int objectCount = 100;
     for (int i = 0; i < objectCount; ++i) {
@@ -121,6 +172,11 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     houseTransform->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, -5.0f)));
     house->setTransform(std::move(houseTransform));
 
+    skybox_ = std::make_unique<Skybox>(
+        manager.getModel("skybox_cube"),
+        manager.getShader("skybox"),
+        manager.getCubemap("mainSkybox")
+    );
 }
 
 void ForestScene::update(float time, Camera& camera) {
@@ -137,3 +193,6 @@ void ForestScene::update(float time, Camera& camera) {
     updateSceneLights();
 
 }
+
+
+

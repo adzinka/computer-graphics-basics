@@ -14,7 +14,20 @@ void DrawableObject::draw() const {
         program_->setUniform("modelMatrix", modelMatrix);
         program_->setUniform("objectColor", color_); 
 
+        if (texture_ && texture_->isLoaded()) {
+            texture_->bind(0);  
+            program_->setUniform("textureUnitID", 0);
+            program_->setUniform("useTexture", 1);
+        }
+        else {
+            program_->setUniform("useTexture", 0);
+        }
+
         model_->draw(mode_, first_, count_);
+
+        if (texture_) {
+            texture_->unbind();
+        }
 
         program_->unuseProgram();
     }

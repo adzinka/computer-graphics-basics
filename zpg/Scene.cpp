@@ -14,9 +14,13 @@ DrawableObject* Scene::addDrawable(Model* model, ShaderProgram* program, GLenum 
     return drawables_.back().get();
 }
 
-void Scene::drawAll() const {
+void Scene::drawAll(const Camera& camera) const {
     for (const auto& obj : drawables_) {
         obj->draw();
+    }
+
+    if (skybox_) {
+        skybox_->draw(camera);
     }
 }
 

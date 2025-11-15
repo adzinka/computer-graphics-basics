@@ -12,8 +12,8 @@ out vec3 worldNormal;
 
 void main()
 {
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(aPos, 200.0);
     
-    worldPosition = modelMatrix * vec4(aPos, 1.0f);
+    worldPosition = modelMatrix * vec4(aPos, 200.0f);
     worldNormal = normalize(transpose(inverse(mat3(modelMatrix))) * aNormal);
 }
