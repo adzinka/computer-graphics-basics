@@ -15,7 +15,7 @@ class ResourceManager;
 class Scene {
 public:
     const static int MAX_LIGHTS = 8;
-    virtual ~Scene() = default;
+    virtual ~Scene();
 
     virtual void setup(Camera& camera, ResourceManager& manager) = 0;
     virtual void update(float time, Camera& camera) = 0;
@@ -26,6 +26,13 @@ public:
     DrawableObject* addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count);
     virtual Light* getFlashlight() { return nullptr; }
 
+    virtual bool allowsObjectPicking() const { return false; }
+    virtual bool allowsObjectPlanting() const { return false; }
+
+    DrawableObject* getObjectByID(int id);
+    virtual void deleteObjectByID(int id);
+    void addObject(Model* model, ShaderProgram* program, const glm::vec3& position);
+    void addCharacter(Model* model, ShaderProgram* shader, Texture* texture, const glm::vec3& position);
 protected:
     std::vector<std::unique_ptr<DrawableObject>> drawables_;
 

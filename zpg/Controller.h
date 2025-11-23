@@ -3,9 +3,11 @@
 #include "Light.h"
 #include <GLFW/glfw3.h> 
 
+class Application;
+
 class Controller {
 public:
-    Controller(Camera* camera);
+    Controller(Camera* camera, Application* app);
 
     void onKey(int key, int scancode, int action, int mods);
     void onMouseButton(int button, int action, int mods);
@@ -16,6 +18,7 @@ public:
     void setFlashlight(Light* light) { flashlight_ = light; }
 private:
     Camera* camera_; 
+    Application* app_;
 
     bool isLookingAround_ = false;
     double lastX_ = 0.0;

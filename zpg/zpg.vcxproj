@@ -130,9 +130,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\hw7\ShaderLoader.cpp" />
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -154,8 +153,6 @@
     <ClCompile Include="zpg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\Downloads\shrek\fiona.mtl" />
-    <None Include="..\..\..\..\Downloads\shrek\toiled.mtl" />
     <None Include=".gitignore" />
     <None Include="bad_phong.frag" />
     <None Include="blinn.frag" />
@@ -166,20 +163,15 @@
     <None Include="lambert.frag" />
     <None Include="lighting.vert" />
     <None Include="phong.frag" />
-    <None Include="shrek.mtl" />
-    <None Include="skybox.frag" />
     <None Include="skybox.vert" />
     <None Include="texture.frag" />
     <None Include="texture.vert" />
-    <None Include="texture_phong.frag" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\hw7\ShaderLoader.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Application.h" />
-    <ClInclude Include="Material.h" />
+    <ClInclude Include="CustomTransform.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="LinearMovement.h" />
     <ClInclude Include="plain_uv.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Skybox.h" />
@@ -233,20 +225,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\..\Downloads\shrek\fiona.obj">
-      <FileType>Document</FileType>
-    </Text>
-    <Text Include="..\..\..\..\Downloads\shrek\toiled.obj">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="zpg.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="shrek.obj">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

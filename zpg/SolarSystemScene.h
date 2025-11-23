@@ -14,4 +14,6 @@ private:
     Rotate* moonOrbitRotation_ = nullptr;
     Rotate* moonCopy_EarthOrbit_ = nullptr;
     Rotate* moonCopy_EarthAxis_ = nullptr;
+    Rotate* marsOrbitRotation_ = nullptr;
+    Rotate* marsAxisRotation_ = nullptr;
 };

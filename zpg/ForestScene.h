@@ -18,6 +18,9 @@ public:
 
     Light* getFlashlight() override { return flashlightLight_; }
 
+    bool allowsObjectPicking() const override { return true; }
+    bool allowsObjectPlanting() const override { return true; }
+
 private:
 
     std::vector<std::unique_ptr<Firefly>> fireflies_;

@@ -20,6 +20,7 @@
 #include "ForestScene.h"
 #include "SolarSystemScene.h"
 #include "TestScene.h"
+#include "GameScene.h"
 
 #include "sphere.h"
 #include "suzi_smooth.h"
@@ -82,7 +83,7 @@ void Application::initialization()
 
     glfwSetWindowUserPointer(window_, this);
 
-    controller_ = std::make_unique<Controller>(&camera_);
+    controller_ = std::make_unique<Controller>(&camera_, this);
 
     // Callbacks
     glfwSetKeyCallback(window_, [](GLFWwindow* w, int key, int sc, int act, int mods){
@@ -158,7 +159,7 @@ void Application::createAndSetupScenes() {
     scene5->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene5));
 
-    auto scene6 = std::make_unique<TestScene>();
+    auto scene6 = std::make_unique<GameScene>();
     scene6->setup(camera_, resourceManager_);
     scenes_.push_back(std::move(scene6));
 
@@ -171,6 +172,10 @@ void Application::run()
     if (!window_ || !ready_) return;
 
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_STENCIL_TEST);
+
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     while (!glfwWindowShouldClose(window_)) {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -185,8 +190,12 @@ void Application::run()
             currentScene_->update(currentFrame, camera_);
         }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
  
+        glClearStencil(0);
+
+        glStencilMask(0xFF);
+
         if (currentScene_) {
             currentScene_->drawAll(camera_);
         }
@@ -300,12 +309,20 @@ void Application::loadResources() {
     resourceManager_.loadModel("shrek", "assets/shrek.obj");
     resourceManager_.loadModel("fiona", "assets/fiona.obj");
     resourceManager_.loadModel("toiled", "assets/toiled.obj");
+    resourceManager_.loadModel("teren", "assets/teren.obj");
+    resourceManager_.loadModel("duck", "assets/12249_Bird_v1_L2.obj");
+    resourceManager_.loadModel("planet", "assets/planet.obj");
 
     resourceManager_.loadTexture("grass", "assets/grass.png");
     resourceManager_.loadTexture("wood", "assets/wooden_fence.png");
     resourceManager_.loadTexture("shrek_texture", "assets/shrek.png");
     resourceManager_.loadTexture("fiona_texture", "assets/fiona.png");
     resourceManager_.loadTexture("toiled_texture", "assets/toiled.jpg");
+    resourceManager_.loadTexture("duck_texture", "assets/12249_Bird_v1_diff.jpg");
+    resourceManager_.loadTexture("sun_texture", "assets/2k_sun.jpg");
+    resourceManager_.loadTexture("earth_texture", "assets/2k_earth_daymap.jpg");
+    resourceManager_.loadTexture("moon_texture", "assets/2k_moon.jpg");
+    resourceManager_.loadTexture("mars_texture", "assets/2k_mars.jpg");
 
     int maxTextureUnits;
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);

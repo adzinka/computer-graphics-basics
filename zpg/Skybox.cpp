@@ -12,6 +12,9 @@ void Skybox::draw(const Camera& camera) const {
     glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_FALSE);
 
+    // Disable writing to the Stencil Buffer so the skybox doesn't have an ID
+    glStencilMask(0x00);
+
     shader_->useProgram();
 
     shader_->setUniform("viewMatrix", camera.getViewMatrix());
@@ -24,6 +27,9 @@ void Skybox::draw(const Camera& camera) const {
     model_->draw(GL_TRIANGLES, 0, 36);
 
     shader_->unuseProgram();
+
+    // Re-enable writing for the rest of the objects
+    glStencilMask(0xFF);
 
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);

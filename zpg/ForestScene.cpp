@@ -3,11 +3,11 @@
 #include "Camera.h"
 #include "Model.h"
 #include "ShaderProgram.h"
-
 #include "Translate.h"
 #include "Rotate.h"
 #include "Scale.h"
 #include "CompositeTransform.h"
+#include "CustomTransform.h"
 #include "Firefly.h"
 
 #include <glm/glm.hpp>
@@ -30,7 +30,6 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     Model* giftModel = manager.getModel("gift");
     Model* treeModel = manager.getModel("tree");
     Model* bushModel = manager.getModel("bush");
-    Model* plainModel = manager.getModel("plain");
     Model* houseModel = manager.getModel("house");
 
     Model* shrekModel = manager.getModel("shrek");
@@ -42,10 +41,12 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     Texture* fionaTexture = manager.getTexture("fiona_texture");
     Texture* toiletTexture = manager.getTexture("toiled_texture");
 
-    Model* plainUVModel = manager.getModel("plain_uv");
+    Model* teren = manager.getModel("teren");
 
-    DrawableObject* ground = addDrawable(plainUVModel, progTextureLit, GL_TRIANGLES, plainModel->getVertexCount());
+    DrawableObject* ground = addDrawable(teren, progTextureLit, GL_TRIANGLES, teren->getVertexCount());
     ground->setTexture(grassTexture);
+    ground->setDeletable(false);
+    ground->setUvScale(25.0f);
    
     auto groundComposite = std::make_unique<CompositeTransform>();
     groundComposite->add(std::make_unique<Scale>(glm::vec3(25.0f, 1.0f, 25.0f)));
@@ -55,7 +56,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
     addLight(Light::createDirectionalLight(
         glm::vec3(-0.2f, -1.0f, -0.3f),
         glm::vec4(0.05f, 0.05f, 0.08f, 1.0f),
-        glm::vec4(0.1f, 0.2f, 0.3f, 1.0f)
+        glm::vec4(0.05f, 0.1f, 0.15f, 1.0f)
     ));
 
     auto flashlight = Light::createSpotlight(
@@ -98,7 +99,7 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
 
         auto toiletTransform = std::make_unique<CompositeTransform>();
         toiletTransform->add(std::make_unique<Scale>(glm::vec3(1.2f)));  
-        toiletTransform->add(std::make_unique<Rotate>(90.0f, glm::vec3(0.0f, 1.0f, 0.0f)));  
+        toiletTransform->add(std::make_unique<Rotate>(180.0f, glm::vec3(0.0f, 1.0f, 0.0f)));  
         toiletTransform->add(std::make_unique<Translate>(glm::vec3(0.0f, 0.0f, -8.0f)));  
         toilet->setTransform(std::move(toiletTransform));
     }
@@ -177,6 +178,15 @@ void ForestScene::setup(Camera& camera, ResourceManager& manager) {
         manager.getShader("skybox"),
         manager.getCubemap("mainSkybox")
     );
+
+    // Test custom transformation
+    DrawableObject* testObj = addDrawable(treeModel, progPhong, GL_TRIANGLES, treeModel->getVertexCount());
+    testObj->setColor(glm::vec3(1.0f, 1.0f, 0.0f)); 
+
+    auto transform = std::make_unique<CompositeTransform>();
+    transform->add(std::make_unique<CustomTransform>());
+    transform->add(std::make_unique<Translate>(glm::vec3(5.0f, 0.0f, 5.0f)));
+    testObj->setTransform(std::move(transform));
 }
 
 void ForestScene::update(float time, Camera& camera) {
@@ -191,7 +201,6 @@ void ForestScene::update(float time, Camera& camera) {
     }
 
     updateSceneLights();
-
 }
 
 

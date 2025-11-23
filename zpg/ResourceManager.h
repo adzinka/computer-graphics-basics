@@ -1,9 +1,10 @@
 ﻿#pragma once
+
+#include <GL/glew.h>
 #include <map>
 #include <string>
 #include <memory>
 #include <vector>
-#include <GL/glew.h>
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "Camera.h"
