@@ -24,16 +24,12 @@ void ResourceManager::createModel(const std::string& name, const void* data, siz
     auto model = std::make_unique<Model>();
     model->upload(data, dataSize, stride);
 
-    // location = 0: position (vec3)
     model->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
 
-    // location = 1: normal (vec3) - если есть
     if (hasColor) {
         model->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, stride, 3 * sizeof(float));
     }
 
-    // location = 2: UV (vec2) - если есть (для моделей с stride = 8 floats)
-    // Проверяем, есть ли место для UV (stride >= 8 floats = 32 bytes)
     if (stride >= 8 * sizeof(float)) {
         model->enableAttrib(2, 2, GL_FLOAT, GL_FALSE, stride, 6 * sizeof(float));
     }
@@ -82,32 +78,30 @@ void ResourceManager::loadModel(const std::string& name, const std::string& objF
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
-            // 1. Позиция (xyz)
+            // 1. Position (xyz)
             packedData.push_back(attrib.vertices[3 * index.vertex_index + 0]);
             packedData.push_back(attrib.vertices[3 * index.vertex_index + 1]);
             packedData.push_back(attrib.vertices[3 * index.vertex_index + 2]);
 
-            // 2. Нормаль (xyz)
+            // 2. Normal (xyz)
             if (index.normal_index >= 0) {
                 packedData.push_back(attrib.normals[3 * index.normal_index + 0]);
                 packedData.push_back(attrib.normals[3 * index.normal_index + 1]);
                 packedData.push_back(attrib.normals[3 * index.normal_index + 2]);
             }
             else {
-                // Если нет нормали, используем вертикальную
                 packedData.push_back(0.0f);
                 packedData.push_back(1.0f);
                 packedData.push_back(0.0f);
             }
 
-            // 3. UV координаты (uv) - ТОЛЬКО ЕСЛИ ЕСТЬ
+            // 3. UV coordinates
             if (hasUV) {
                 if (index.texcoord_index >= 0) {
                     packedData.push_back(attrib.texcoords[2 * index.texcoord_index + 0]);
                     packedData.push_back(attrib.texcoords[2 * index.texcoord_index + 1]);
                 }
                 else {
-                    // Если нет UV для этой вершины, используем 0,0
                     packedData.push_back(0.0f);
                     packedData.push_back(0.0f);
                 }
@@ -118,14 +112,13 @@ void ResourceManager::loadModel(const std::string& name, const std::string& objF
     auto model = std::make_unique<Model>();
     model->upload(packedData.data(), packedData.size() * sizeof(float), stride);
 
-    // Атрибуты:
     // location = 0: position (vec3)
     model->enableAttrib(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
 
     // location = 1: normal (vec3)
     model->enableAttrib(1, 3, GL_FLOAT, GL_FALSE, stride, 3 * sizeof(float));
 
-    // location = 2: UV (vec2) - ТОЛЬКО ЕСЛИ ЕСТЬ
+    // location = 2: UV (vec2)
     if (hasUV) {
         model->enableAttrib(2, 2, GL_FLOAT, GL_FALSE, stride, 6 * sizeof(float));
     }

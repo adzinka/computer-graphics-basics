@@ -20,6 +20,9 @@ public:
     void switchScene(int index);
 
     Camera& getCamera() { return camera_; }
+    Scene* getCurrentScene() { return currentScene_; }
+    ResourceManager* getResourceManager() { return &resourceManager_; }
+    GLFWwindow* getWindow() { return window_; }
 
     void onWindowResize(int width, int height);
 
@@ -33,6 +36,7 @@ private:
     Scene* currentScene_ = nullptr;
 
     ResourceManager resourceManager_;
+
     void loadResources();
 
     bool ready_ = false;

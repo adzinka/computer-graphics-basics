@@ -1,15 +1,38 @@
 ﻿#include "Scene.h"
-#include <iostream>
-
+#include "Texture.h"
 #include "Translate.h" 
 #include "Scale.h"
-#include "sphere.h"
 #include "Camera.h"
 #include <set>
 #include <string>
+#include <iostream>
+
+Scene::~Scene() = default;
 
 DrawableObject* Scene::addDrawable(Model* model, ShaderProgram* program, GLenum mode, GLsizei count) {
     auto drawable = std::make_unique<DrawableObject>(model, program, mode, count);
+    
+    int newID = 1;
+    while (true) {
+        bool isUsed = false;
+     
+        for (const auto& obj : drawables_) {
+            if (obj->getID() == newID) {
+                isUsed = true;
+                break;
+            }
+        }
+        if (!isUsed) break; 
+        newID++; 
+    }
+
+    if (newID <= 255) {
+        drawable->setID(newID);
+    }
+    else {
+        printf("WARNING: Run out of IDs (max 255)!\n");
+    }
+
     drawables_.push_back(std::move(drawable));
     return drawables_.back().get();
 }
@@ -76,4 +99,51 @@ void Scene::updateSceneLights() const {
 
         shader->unuseProgram();
     }
+}
+
+DrawableObject* Scene::getObjectByID(int id) {
+    if (id <= 0) return nullptr;
+
+    for (const auto& obj : drawables_) {
+        if (obj && obj->getID() == id) {
+            return obj.get();
+        }
+    }
+    return nullptr;
+}
+
+void Scene::deleteObjectByID(int id) {
+    if (id <= 0) return;
+
+    auto it = std::remove_if(drawables_.begin(), drawables_.end(), [id](const auto& obj) {
+        return obj && obj->getID() == id;
+        });
+
+    if (it != drawables_.end()) {
+        drawables_.erase(it, drawables_.end());
+    }
+}
+
+void Scene::addObject(Model* model, ShaderProgram* program, const glm::vec3& position) {
+    DrawableObject* obj = addDrawable(model, program, GL_TRIANGLES, model->getVertexCount());
+
+    obj->setColor(glm::vec3(0.1f, 0.4f, 0.1f));
+
+    auto objComposite = std::make_unique<CompositeTransform>();
+    objComposite->add(std::make_unique<Scale>(glm::vec3(1.0f))); 
+    objComposite->add(std::make_unique<Translate>(position));
+    obj->setTransform(std::move(objComposite));
+}
+
+void Scene::addCharacter(Model* model, ShaderProgram* shader, Texture* texture, const glm::vec3& position) {
+    DrawableObject* obj = addDrawable(model, shader, GL_TRIANGLES, model->getVertexCount());
+
+    obj->setTexture(texture); 
+    obj->setUvScale(1.0f);    
+    obj->setDeletable(true); 
+
+    auto objComposite = std::make_unique<CompositeTransform>();
+    objComposite->add(std::make_unique<Scale>(glm::vec3(1.0f)));
+    objComposite->add(std::make_unique<Translate>(position));
+    obj->setTransform(std::move(objComposite));
 }
