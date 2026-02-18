@@ -27,6 +27,7 @@ The project implements a scene-based architecture, multiple lighting models, obj
 High-level structure:
 
 Application
+
 ├── Scene (base)
 ├── DrawableObject
 ├── Controller (input)
