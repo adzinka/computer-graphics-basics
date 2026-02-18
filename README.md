@@ -29,9 +29,13 @@ High-level structure:
 Application
 
 ├── Scene (base)
+
 ├── DrawableObject
+
 ├── Controller (input)
+
 ├── ResourceManager
+
 └── Shader system
 
 
